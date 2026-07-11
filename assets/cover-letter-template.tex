@@ -1,0 +1,78 @@
+%-------------------------
+% Cover Letter in LaTeX -- MLA-style block letter for the resume-tailor skill.
+% Left-aligned stacked letterhead, ~1in margins, 1.4 line spacing in the body.
+% CANONICAL cover-letter format. The skill emits letters in this exact shape when
+% the user opts in.
+% Hard rules: ONE page, no em dashes, PDF text layer stays plain ASCII.
+%   - Natural contractions ARE allowed: \pdfglyphtounicode remaps the apostrophe glyph
+%     to U+0027, so "I'm / it's / I'd" display normally but extract as ASCII '.
+% Voice/structure contract: references/cover-letter-format.md.
+% Needs the setspace package (install via tlmgr if missing).
+%
+% Everything in ALL-CAPS ANGLE BRACKETS is a placeholder to fill from real material.
+%-------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage[top=0.9in, bottom=0.6in, left=1in, right=1in]{geometry}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage[hidelinks]{hyperref}
+\usepackage{setspace}
+\usepackage[english]{babel}
+\input{glyphtounicode}
+\pdfglyphtounicode{quoteright}{0027}   % apostrophes extract as ASCII ' (keeps the text layer ATS-clean)
+\pdfgentounicode=1
+
+\pagestyle{empty}      % no page number
+\urlstyle{same}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+%----------LETTERHEAD (left-aligned, single-spaced stack; links plain/unadorned)----------
+\begin{singlespace}
+<FULL NAME> \\
+<PHONE> \\
+\href{mailto:<EMAIL>}{<EMAIL>} \\
+\href{<LINKEDIN URL>}{<LINKEDIN HANDLE>} \\
+\href{<GITHUB URL>}{<GITHUB HANDLE>} \\
+\href{<PORTFOLIO URL>}{<PORTFOLIO DOMAIN>}
+\end{singlespace}
+
+\vspace{9pt}
+
+Dear <SALUTATION>,
+
+\vspace{6pt}
+
+\begin{spacing}{1.4}
+\setlength{\parskip}{5pt}
+
+<PARAGRAPH 1 -- who I am + why THIS company/mission. Open with a one-line self-description
+(role + background) and, if relevant, current status. Then a concrete, company-specific hook
+tied to their actual product or mission -- not generic praise.>
+
+<PARAGRAPH 2 -- what I've built. Lead with owning systems end to end. Use the strongest proof
+point as the centerpiece with the architecture/impact details that match the target's concerns;
+add one shorter second proof point mapped to the role. Every claim traces to real work.>
+
+<PARAGRAPH 3 -- skills fit + values + close. Weave the toolkit into prose (do not recite a
+skills list that echoes the JD back), name a couple of role-tied qualities, then a mission-level
+line + a warm closing sentence inviting a conversation.>
+
+\end{spacing}
+
+\vspace{6pt}
+
+\begin{singlespace}
+Best regards, \\
+<FULL NAME>
+\end{singlespace}
+
+\end{document}
+
+% FITTING TO ONE PAGE (tune in this order until Pages: 1, keeping the ~1.4 look):
+%   1. trim the wordiest sentences (each ~2 saved words can reclaim a line);
+%   2. drop \parskip 5pt -> 4pt, or the body spacing 1.4 -> 1.35;
+%   3. shave the bottom margin (0.6in -> 0.55in) -- invisible on a letter that ends mid-page.
+% A slightly short last page is fine; the hard rule is one page, not a filled page.
