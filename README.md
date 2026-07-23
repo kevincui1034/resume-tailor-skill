@@ -1,6 +1,6 @@
 # Resume Tailor — a Claude Code skill
 
-Turn your real work into targeted, one-page LaTeX resumes. Paste a job description (or three), get back a compiled, ATS-clean PDF built from **verified accomplishments mined from your own repos and resume** — plus an optional cover letter in your voice, answers to the posting's application questions, a deterministic keyword-coverage report, and a tracked history of every application.
+Turn your real work into targeted, one-page LaTeX resumes. Paste a job description (or three), get back a compiled, ATS-clean PDF built from **verified accomplishments mined from your own repos and resume** — plus an optional cover letter in your voice, answers to the posting's application questions, a deterministic keyword-coverage report, and an interactive local dashboard that tracks every application.
 
 **The core rule: nothing is invented.** Every bullet traces to an accomplishment note, which traces to a real repo or a fact you confirmed. Anything Claude inferred but couldn't verify is marked `(verify)` until you sign off.
 
@@ -11,7 +11,7 @@ Turn your real work into targeted, one-page LaTeX resumes. Paste a job descripti
 /plugin install resume-tailor
 ```
 
-Requirements: a LaTeX distribution on PATH ([TinyTeX](https://yihui.org/tinytex/) is plenty — the skill runs `pdflatex`, `pdfinfo`, `pdftoppm`, `pdftotext`) and Node.js (for the deterministic matcher).
+Requirements: a LaTeX distribution on PATH ([TinyTeX](https://yihui.org/tinytex/) is plenty — the skill runs `pdflatex`, `pdfinfo`, `pdftoppm`, `pdftotext`) and Node.js (for the deterministic matcher and the dashboard's data file).
 
 ## First run
 
@@ -34,9 +34,9 @@ Everything works as natural language ("tailor my resume for this JD…") or as `
 | `connect` | Lists your connected sources and offers a sync — re-reads connected repos so new work lands in your notes. |
 | "add my experience at X" | No repo needed: a short interview turns a job or project you describe into an accomplishment note. |
 | `refresh <draft>` | Regenerates an existing draft from your current notes (new metrics, renames, links). |
-| `status <company> <status>` | Marks an application `applied \| interviewing \| offer \| rejected \| ghosted`. |
-| "show my applications" | Summarizes your tracked applications — counts by status and job type, coverage, recent activity. |
+| `status <company> <status>` | Marks an application `applied \| interviewing \| offer \| rejected \| ghosted` — same effect as clicking in the dashboard. |
 | `template` / `template <name>` | Lists the template library / switches the active resume template. Drop in your own resume (PDF/docx/image/tex) and it becomes a reusable template after a side-by-side fidelity check. |
+| `dashboard` | Opens the application tracker in your browser. |
 
 ## What a tailor run does
 
@@ -45,7 +45,7 @@ Everything works as natural language ("tailor my resume for this JD…") or as `
 - **Hard rules**: exactly one page; ATS-clean text layer (verified by codepoint scan); every bullet fills its lines (template-dependent); compile-verified before you ever see it.
 - **Coverage report**: which of the JD's must-have keywords your draft covers and which are missing — missing terms are surfaced, never stuffed in.
 - **Cover letters + question answers**: opt-in, built from the same analysis, voiced per your `voice.md`.
-- **Tracking**: every draft lands in `applications.md` — one record per application with company, role, job type, keyword coverage, and status (applied / interviewing / offer / rejected / ghosted). Update statuses or ask for a summary in plain words; the file is yours to read, sync, and build on.
+- **Tracking**: every draft lands in `applications.md`; open `dashboard.html` in Chrome/Edge to filter, chart by job type and match quality, and click statuses (applied / interviewing / offer / rejected / ghosted) that write straight back to the file.
 
 ## Layout
 
@@ -53,7 +53,7 @@ Everything works as natural language ("tailor my resume for this JD…") or as `
 skills/resume-tailor/
   SKILL.md            # the engine
   assets/             # seeds copied into your workspace at init
-    templates/jake.tex, jd-match.mjs,
+    templates/jake.tex, dashboard.html, jd-match.mjs,
     format.md, voice-seed.md, cover-letter-*, identity-template.md,
     bank-seed.md, applications-seed.md, sources-seed.md, project-note-template.md
 ```
