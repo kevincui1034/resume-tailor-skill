@@ -1,6 +1,6 @@
 ---
 name: resume-tailor
-description: Tailor one-page LaTeX resumes to job descriptions from the user's real, verified work. Use when the user wants to tailor/build a resume for a JD or role, paste job descriptions or posting URLs (single or batch), write a cover letter or application-question answers, track applications (applied/interviewing/ghosted/rejected), add a repo as resume material, switch or drop in a resume template, or set up a resume workspace. Triggers on "tailor my resume", "resume for this JD", "cover letter for", "mark <company> as <status>", "add this repo to my resume", "change resume template".
+description: Tailor one-page LaTeX resumes to job descriptions from the user's real, verified work. Use when the user wants to tailor/build a resume for a JD or role, paste job descriptions or posting URLs (single or batch), write a cover letter or application-question answers, track applications (applied/interviewing/ghosted/rejected), connect a local or GitHub repo (or describe a project/job directly) as resume material, open the application dashboard, switch or drop in a resume template, or set up a resume workspace. Triggers on "tailor my resume", "resume for this JD", "cover letter for", "mark <company> as <status>", "connect this repo", "add my experience at", "open my dashboard", "change resume template".
 ---
 
 # Resume Tailor
@@ -15,11 +15,12 @@ Turns a job description into a targeted, one-page LaTeX resume assembled from th
 | --- | --- |
 | No workspace exists yet (no `resume/` with `identity.md`) | **Init wizard** (below), then continue with what they asked |
 | A JD, posting URL, role name, or several of them | **Tailor** (the default pipeline) |
-| "add this repo / project to my resume" | **Add material** |
+| "connect <repo path / GitHub URL>", "add this repo / project / my experience at X" | **Connect** |
+| "connect" alone, "what sources are connected", "sync my repos" | **Connect** (list + sync) |
 | "refresh <draft>" | **Refresh** |
 | "mark <company> as interviewing/ghosted/rejected/…" | **Status** |
 | "change/list/drop in template" | **Template** |
-| "show my applications / dashboard" | Point at `resume/dashboard.html` (open in Chrome/Edge) |
+| "dashboard", "open/show my applications" | **Dashboard** |
 
 ## Workspace layout (created by init)
 
@@ -32,6 +33,7 @@ resume/
   templates/           # template library (jake.tex default; drop-ins added here)
   cover-letter-format.md / cover-letter-template.tex
   projects/            # one accomplishment note per job/project - THE source of truth
+  sources.md           # registry of connected context sources (repos / GitHub / manual) -> notes
   targets/             # auto-saved JDs, one note per posting
   drafts/              # generated .tex + .pdf (+ _answers.md)
   bank.md              # reuse memory: themes -> proven bullets/cover skeletons/skills (JSON block)
@@ -45,13 +47,13 @@ resume/
 
 ## Init wizard (first run, or when any anchor file is missing)
 
-Copy the seeds from this skill's `assets/` directory into the workspace: `templates/jake.tex` (+ activate as `template.tex`, stamped `% ACTIVE TEMPLATE: jake`), `format.md`, `voice-seed.md → voice.md`, `cover-letter-format.md`, `cover-letter-template.tex`, `identity-template.md → identity.md`, `bank-seed.md → bank.md`, `applications-seed.md → applications.md`, `dashboard.html`, `jd-match.mjs → scripts/`. Then walk the user through, asking in one or two batched questions rather than a drip:
+Copy the seeds from this skill's `assets/` directory into the workspace: `templates/jake.tex` (+ activate as `template.tex`, stamped `% ACTIVE TEMPLATE: jake`), `format.md`, `voice-seed.md → voice.md`, `cover-letter-format.md`, `cover-letter-template.tex`, `identity-template.md → identity.md`, `bank-seed.md → bank.md`, `applications-seed.md → applications.md`, `sources-seed.md → sources.md`, `dashboard.html`, `jd-match.mjs → scripts/`. Then walk the user through, asking in one or two batched questions rather than a drip:
 
 1. **Template** — keep the default `jake` (sb2nov classic) or drop in their own resume as a template (see Template mode). Asked once here; changeable any time later.
-2. **Context intake — where the resume content comes from.** Offer all three, best first:
-   - **Import their existing resume** (PDF/docx/tex/image). Parse it into: `identity.md` (name, contact, education, experience entries, draft prefix), one `projects/` note per job/project (bullets become accomplishments), initial skills lists, and **seed the bank** — bullets from a resume they've been sending are proven material (`source: "import"`, `template` = whatever it shipped in, so line fill still gets re-verified under the active template; tag each with themes and trigger keywords). This gives a working bank on day one.
-   - **Mine repos** (Add-material mode): local paths or GitHub URLs → read README/manifests/structure and git history for what *they* did; draft quantified accomplishment notes per `assets/project-note-template.md`; mark inferred claims `(verify)`; never write into the source repo.
-   - **Interview** for experience with no artifact: short Q&A; answers recorded as user-confirmed notes.
+2. **Context intake — where the resume content comes from.** Offer all three, best first (each ingested source is registered in `sources.md` so it can be listed and re-synced later):
+   - **Import their existing resume** (PDF/docx/tex/image). Parse it into: `identity.md` (name, contact, education, experience entries, draft prefix), one `projects/` note per job/project (bullets become accomplishments), initial skills lists, and **seed the bank** — bullets from a resume they've been sending are proven material (`source: "import"`, `template` = whatever it shipped in, so line fill still gets re-verified under the active template; tag each with themes and trigger keywords). This gives a working bank on day one. Register each resulting note in `sources.md` with `source: "resume import"`, `kind: manual`.
+   - **Connect repos** (Connect mode, below): local paths or GitHub URLs → mined into quantified accomplishment notes.
+   - **Interview** for experience with no artifact: short Q&A; answers recorded as user-confirmed notes, registered as `kind: manual`.
 3. **Voice** — `voice.md` ships with generic anti-AI defaults. Offer: paste a writing sample (an old cover letter, a long email) and calibrate the "How you sound" section to them; skip is fine.
 4. **Plumbing** — if the workspace is inside a git repo, ask once whether runs should commit (+push). Record the answer in `identity.md` under a `## Config` heading.
 
@@ -110,9 +112,19 @@ Answer each detected question **in the user's voice per `voice.md`**, honesty ru
 - Append one entry to `resume/log.md` (`## [YYYY-MM-DD] tailor | <target> -> <draft>`; batches get one entry with per-target bullets).
 - Mention the dashboard reflects the new records. If git was opted in at init: one commit per run (`tailor: <target>`), push, report failures without retry-looping.
 
-## Add-material mode
+## Connect mode — repos, GitHub, or plain description
 
-Input: a local repo path or GitHub URL (or "I also worked at X" with no artifact → interview). Read the source — README, manifests, structure, `git log`/`shortlog` for the user's actual contributions; never write into it. Draft/refresh `projects/<name>.md` per `assets/project-note-template.md` with `skills`/`tech`/`domains` frontmatter (these drive retrieval), quantified bullets, `(verify)` on anything inferred. Show the note and ask the user to correct role/dates/metrics. Log it.
+The user's project context can come from three places; all three land in a `projects/` accomplishment note (the file tailoring reads) and are registered in `sources.md` (the registry that remembers where notes came from).
+
+- **`connect <local-path>` or `connect <github-url>`** — register the source (`kind: local` or `github`), then mine it: read README, manifests, top-level structure, and `git log`/`shortlog` for the *user's* actual contributions (GitHub: `gh repo view` or clone to a temp dir); **never write into the source repo**. Draft/refresh `projects/<name>.md` per `assets/project-note-template.md` with `skills`/`tech`/`domains` frontmatter (these drive retrieval), quantified bullets, `(verify)` on anything inferred rather than confirmed. Show the note; ask the user to correct role/dates/metrics (unreadable from code). Stamp `lastSynced` in `sources.md`.
+- **"add my experience/project at X" with no repo** — short interview instead: what it was, their role and dates, what they actually did, real numbers they can stand behind. Note gets `repo: none — described by user`; registered as `kind: manual`. Facts the user states are confirmed by definition — no `(verify)`.
+- **`connect` with no arguments** — list everything in `sources.md` (source, kind, note, lastSynced) and offer a **sync**: re-mine each repo source and refresh its note so new features/metrics land. Never downgrade a user-confirmed fact back to `(verify)` during a sync; only add or update.
+
+Draft refreshes (Refresh mode) pick up note changes; a connect sync is how the notes themselves get fresher. Log each connect/sync run.
+
+## Dashboard mode — "dashboard"
+
+Open `resume/dashboard.html` in the user's default browser: Windows → PowerShell `Start-Process "resume\dashboard.html"` (or `start "" "resume\dashboard.html"`), macOS → `open resume/dashboard.html`, Linux → `xdg-open resume/dashboard.html`. Remind on first open: click **Open applications.md** once and pick `resume/applications.md`; Chrome/Edge get click-to-save write-back (statuses/notes), other browsers are read-only with a download-to-save fallback — if their default browser isn't Chromium, suggest opening it in Chrome/Edge instead.
 
 ## Refresh mode — "refresh <draft>"
 

@@ -18,10 +18,25 @@ Requirements: a LaTeX distribution on PATH ([TinyTeX](https://yihui.org/tinytex/
 Say something like *"tailor my resume for this JD: …"*. With no workspace yet, the skill runs a short init wizard:
 
 1. **Template** — keep the classic sb2nov/Jake Gutierrez default, or hand it your current resume (PDF/docx/image/tex) and it recreates your layout as a reusable template, pixel-compared against the original for your approval. Switch any time with "change resume template".
-2. **Content** — import your existing resume (parsed into structured accomplishment notes + a seeded reuse bank), point it at your repos (it reads the code and git history and drafts quantified notes), and/or answer a short interview for work with no artifact.
+2. **Content** — import your existing resume (parsed into structured accomplishment notes + a seeded reuse bank), connect your local or GitHub repos (it reads the code and git history and drafts quantified notes), and/or answer a short interview for work with no artifact. Every source is registered in `sources.md` so you can list and re-sync them later.
 3. **Voice** — optionally paste a writing sample so cover letters sound like you. Ships with anti-AI defaults (no em dashes, no canned enthusiasm, no "not just X but Y").
 
 Everything lives in a `resume/` folder in your project — plain markdown + LaTeX you own, sync, and edit freely.
+
+## Commands
+
+Everything works as natural language ("tailor my resume for this JD…") or as `/resume-tailor <command>`:
+
+| Command | What it does |
+| --- | --- |
+| `tailor <JD \| posting URL \| role>` — one or several | One tailored, compiled one-page resume per target. Batches run in parallel; every JD is auto-saved as a target note; each draft gets a keyword-coverage report. Asks once per run whether you want cover letters, and answers any application questions found in the posting. |
+| `connect <repo path or GitHub URL>` | Mines the repo (README, structure, your git history) into a verified accomplishment note and registers it as a context source. Never writes into your repo. |
+| `connect` | Lists your connected sources and offers a sync — re-reads connected repos so new work lands in your notes. |
+| "add my experience at X" | No repo needed: a short interview turns a job or project you describe into an accomplishment note. |
+| `refresh <draft>` | Regenerates an existing draft from your current notes (new metrics, renames, links). |
+| `status <company> <status>` | Marks an application `applied \| interviewing \| offer \| rejected \| ghosted` — same effect as clicking in the dashboard. |
+| `template` / `template <name>` | Lists the template library / switches the active resume template. Drop in your own resume (PDF/docx/image/tex) and it becomes a reusable template after a side-by-side fidelity check. |
+| `dashboard` | Opens the application tracker in your browser. |
 
 ## What a tailor run does
 
@@ -40,7 +55,7 @@ skills/resume-tailor/
   assets/             # seeds copied into your workspace at init
     templates/jake.tex, dashboard.html, jd-match.mjs,
     format.md, voice-seed.md, cover-letter-*, identity-template.md,
-    bank-seed.md, applications-seed.md, project-note-template.md
+    bank-seed.md, applications-seed.md, sources-seed.md, project-note-template.md
 ```
 
 ## License
