@@ -1,6 +1,6 @@
 ---
 name: resume-tailor
-description: Tailor one-page LaTeX resumes to job descriptions from the user's real, verified work. Use when the user wants to tailor/build a resume for a JD or role, paste job descriptions or posting URLs (single or batch), write a cover letter or application-question answers, track applications (applied/interviewing/ghosted/rejected), connect a local or GitHub repo (or describe a project/job directly) as resume material, open the application dashboard, switch or drop in a resume template, or set up a resume workspace. Triggers on "tailor my resume", "resume for this JD", "cover letter for", "mark <company> as <status>", "connect this repo", "add my experience at", "open my dashboard", "change resume template".
+description: Tailor one-page LaTeX resumes to job descriptions from the user's real, verified work. Use when the user wants to tailor/build a resume for a JD or role, paste job descriptions or posting URLs (single or batch), write a cover letter or application-question answers, track applications (applied/interviewing/ghosted/rejected), connect a local or GitHub repo (or describe a project/job directly) as resume material, switch or drop in a resume template, or set up a resume workspace. Triggers on "tailor my resume", "resume for this JD", "cover letter for", "mark <company> as <status>", "connect this repo", "add my experience at", "change resume template".
 ---
 
 # Resume Tailor
@@ -20,7 +20,7 @@ Turns a job description into a targeted, one-page LaTeX resume assembled from th
 | "refresh <draft>" | **Refresh** |
 | "mark <company> as interviewing/ghosted/rejected/…" | **Status** |
 | "change/list/drop in template" | **Template** |
-| "dashboard", "open/show my applications" | **Dashboard** |
+| "show my applications" | Summarize `applications.md` (counts by status/type, recent activity) |
 
 ## Workspace layout (created by init)
 
@@ -37,8 +37,7 @@ resume/
   targets/             # auto-saved JDs, one note per posting
   drafts/              # generated .tex + .pdf (+ _answers.md)
   bank.md              # reuse memory: themes -> proven bullets/cover skeletons/skills (JSON block)
-  applications.md      # tracker dataset (JSON block) - feeds the dashboard
-  dashboard.html       # local interactive tracker (File System Access write-back)
+  applications.md      # tracker dataset (JSON block) - one record per application
   scripts/jd-match.mjs # deterministic JD->theme matcher + keyword-coverage checker
   log.md               # append-only run log
 ```
@@ -47,7 +46,7 @@ resume/
 
 ## Init wizard (first run, or when any anchor file is missing)
 
-Copy the seeds from this skill's `assets/` directory into the workspace: `templates/jake.tex` (+ activate as `template.tex`, stamped `% ACTIVE TEMPLATE: jake`), `format.md`, `voice-seed.md → voice.md`, `cover-letter-format.md`, `cover-letter-template.tex`, `identity-template.md → identity.md`, `bank-seed.md → bank.md`, `applications-seed.md → applications.md`, `sources-seed.md → sources.md`, `dashboard.html`, `jd-match.mjs → scripts/`. Then walk the user through, asking in one or two batched questions rather than a drip:
+Copy the seeds from this skill's `assets/` directory into the workspace: `templates/jake.tex` (+ activate as `template.tex`, stamped `% ACTIVE TEMPLATE: jake`), `format.md`, `voice-seed.md → voice.md`, `cover-letter-format.md`, `cover-letter-template.tex`, `identity-template.md → identity.md`, `bank-seed.md → bank.md`, `applications-seed.md → applications.md`, `sources-seed.md → sources.md`, `jd-match.mjs → scripts/`. Then walk the user through, asking in one or two batched questions rather than a drip:
 
 1. **Template** — keep the default `jake` (sb2nov classic) or drop in their own resume as a template (see Template mode). Asked once here; changeable any time later.
 2. **Context intake — where the resume content comes from.** Offer all three, best first (each ingested source is registered in `sources.md` so it can be listed and re-synced later):
@@ -110,7 +109,7 @@ Answer each detected question **in the user's voice per `voice.md`**, honesty ru
 - **Harvest to `bank.md`:** new bullets that survived verification, new cover skeletons, new themes for recurring unmatched requirements — each traced to a `projects/` note, tagged with themes and `template`, skipping near-duplicates. This is how the deterministic layer compounds.
 - Append one record per target to `applications.md`'s JSON (status `drafted`, coverage from step 7).
 - Append one entry to `resume/log.md` (`## [YYYY-MM-DD] tailor | <target> -> <draft>`; batches get one entry with per-target bullets).
-- Mention the dashboard reflects the new records. If git was opted in at init: one commit per run (`tailor: <target>`), push, report failures without retry-looping.
+- If git was opted in at init: one commit per run (`tailor: <target>`), push, report failures without retry-looping.
 
 ## Connect mode — repos, GitHub, or plain description
 
@@ -122,17 +121,13 @@ The user's project context can come from three places; all three land in a `proj
 
 Draft refreshes (Refresh mode) pick up note changes; a connect sync is how the notes themselves get fresher. Log each connect/sync run.
 
-## Dashboard mode — "dashboard"
-
-Open `resume/dashboard.html` in the user's default browser: Windows → PowerShell `Start-Process "resume\dashboard.html"` (or `start "" "resume\dashboard.html"`), macOS → `open resume/dashboard.html`, Linux → `xdg-open resume/dashboard.html`. Remind on first open: click **Open applications.md** once and pick `resume/applications.md`; Chrome/Edge get click-to-save write-back (statuses/notes), other browsers are read-only with a download-to-save fallback — if their default browser isn't Chromium, suggest opening it in Chrome/Edge instead.
-
 ## Refresh mode — "refresh <draft>"
 
 Regenerate an existing draft from its saved target + the **current** `projects/` notes (rebrands and new metrics land automatically). For a legacy draft with no target note, reconstruct from its `% SOURCING` block and confirm. Same filename — overwrite `.tex`/`.pdf`, full verification, refresh the target's Tailoring-notes trailer and the `applications.md` record's notes.
 
 ## Status mode — "mark <company> as <status>"
 
-Find the record in `applications.md` (match `company`, fall back to `id`/`role`; ask if ambiguous). Statuses: `drafted | applied | interviewing | offer | rejected | ghosted`. Set `status` + `statusUpdated` (today), JSON block only, log (+ commit if configured). The dashboard's in-page status buttons are the click alternative — it writes the same file via the File System Access API (Chrome/Edge; read-only + download fallback elsewhere).
+Find the record in `applications.md` (match `company`, fall back to `id`/`role`; ask if ambiguous). Statuses: `drafted | applied | interviewing | offer | rejected | ghosted`. Set `status` + `statusUpdated` (today), JSON block only, log (+ commit if configured). "Show my applications" gets a summary straight from the same file — counts by status and job type, average coverage, recent activity.
 
 ## Template mode — "template", "template <name>", or a dropped-in resume
 

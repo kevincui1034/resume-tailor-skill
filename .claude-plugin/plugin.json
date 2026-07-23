@@ -1,8 +1,8 @@
 {
   "name": "resume-tailor",
   "displayName": "Resume Tailor",
-  "version": "1.1.0",
-  "description": "Turn your real work into targeted, one-page LaTeX resumes. Connect local or GitHub repos (or just describe your work) to build verified accomplishment notes, then tailor a resume per job description (multi-JD batches in parallel), write matching cover letters and application-question answers in your voice, check keyword coverage deterministically, track every application in an interactive local dashboard (open it with 'dashboard'), and drop in custom resume templates. Every bullet traces to real work - nothing is invented.",
+  "version": "1.2.0",
+  "description": "Turn your real work into targeted, one-page LaTeX resumes. Connect local or GitHub repos (or just describe your work) to build verified accomplishment notes, then tailor a resume per job description (multi-JD batches in parallel), write matching cover letters and application-question answers in your voice, check keyword coverage deterministically, track every application with statuses and summaries, and drop in custom resume templates. Every bullet traces to real work - nothing is invented.",
   "author": {
     "name": "Kevin Cui",
     "url": "https://github.com/kevincui1034"
