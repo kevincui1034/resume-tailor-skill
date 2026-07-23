@@ -1,61 +1,49 @@
-# Resume Tailor — a Claude Code skill
+# Resume Tailor
 
-Turn your real work into targeted, one-page LaTeX resumes. Paste a job description (or three), get back a compiled, ATS-clean PDF built from **verified accomplishments mined from your own repos and resume** — plus an optional cover letter in your voice, answers to the posting's application questions, a deterministic keyword-coverage report, and an interactive local dashboard that tracks every application.
+A [Claude Code](https://claude.com/claude-code) skill that writes you a **custom resume for every job you apply to** — built only from work you've actually done.
 
-**The core rule: nothing is invented.** Every bullet traces to an accomplishment note, which traces to a real repo or a fact you confirmed. Anything Claude inferred but couldn't verify is marked `(verify)` until you sign off.
+You paste a job posting. It picks the most relevant things from your background, writes a clean one-page resume around them, double-checks the result, and hands you a finished PDF. It can also write the cover letter, answer the application's essay questions in your own voice, and keep track of everywhere you've applied.
 
-## Install
+**It never makes things up.** Everything on the resume comes from your real projects and jobs. If it's unsure about a detail, it asks you instead of guessing.
 
-```
-/plugin marketplace add kevincui1034/resume-tailor-skill
-/plugin install resume-tailor
-```
+## Setting up
 
-Requirements: a LaTeX distribution on PATH ([TinyTeX](https://yihui.org/tinytex/) is plenty — the skill runs `pdflatex`, `pdfinfo`, `pdftoppm`, `pdftotext`) and Node.js (for the deterministic matcher and the dashboard's data file).
+1. Install [Claude Code](https://claude.com/claude-code), then run:
 
-## First run
+   ```
+   /plugin marketplace add kevincui1034/resume-tailor-skill
+   /plugin install resume-tailor
+   ```
 
-Say something like *"tailor my resume for this JD: …"*. With no workspace yet, the skill runs a short init wizard:
+2. Say **"help me tailor my resume"**. The first time, it sets itself up and asks you one question: share your current resume (any file format), links to projects you've worked on, or just describe your work in your own words — any mix is fine.
 
-1. **Template** — keep the classic sb2nov/Jake Gutierrez default, or hand it your current resume (PDF/docx/image/tex) and it recreates your layout as a reusable template, pixel-compared against the original for your approval. Switch any time with "change resume template".
-2. **Content** — import your existing resume (parsed into structured accomplishment notes + a seeded reuse bank), connect your local or GitHub repos (it reads the code and git history and drafts quantified notes), and/or answer a short interview for work with no artifact. Every source is registered in `sources.md` so you can list and re-sync them later.
-3. **Voice** — optionally paste a writing sample so cover letters sound like you. Ships with anti-AI defaults (no em dashes, no canned enthusiasm, no "not just X but Y").
+That's it. It learns your background from what you give it, and if your computer is missing a helper tool (like the free PDF maker it uses), it offers to install it for you.
 
-Everything lives in a `resume/` folder in your project — plain markdown + LaTeX you own, sync, and edit freely.
+## How you use it
 
-## Commands
+Just talk to it. For example:
 
-Everything works as natural language ("tailor my resume for this JD…") or as `/resume-tailor <command>`:
+- **"Tailor my resume for this job:"** *(paste the posting, or a link to it)* — you get a one-page PDF matched to that job. Paste several postings at once and it makes one resume for each, at the same time.
+- **"Write a cover letter too"** — it asks anyway on each run; say yes and it writes one that sounds like you, not like a robot.
+- **"Here's another project I worked on:"** *(paste one or more project links or folders)* — it studies them and adds what you built to your background. No code? Just describe the work and it takes notes.
+- **"I applied to Acme"** / **"Acme rejected me"** / **"I'm interviewing at Acme"** — it keeps your application list up to date.
+- **"Open my dashboard"** — a page in your browser with charts of everywhere you've applied, what type of jobs, how well you matched them, and buttons to update each application's status.
+- **"Use my resume's design"** — hand it your current resume and it reuses your exact layout for every future resume, instead of the built-in design. You approve the copy before it's used.
 
-| Command | What it does |
-| --- | --- |
-| `tailor <JD \| posting URL \| role>` — one or several | One tailored, compiled one-page resume per target. Batches run in parallel; every JD is auto-saved as a target note; each draft gets a keyword-coverage report. Asks once per run whether you want cover letters, and answers any application questions found in the posting. |
-| `connect <repo path or GitHub URL>` | Mines the repo (README, structure, your git history) into a verified accomplishment note and registers it as a context source. Never writes into your repo. |
-| `connect` | Lists your connected sources and offers a sync — re-reads connected repos so new work lands in your notes. |
-| "add my experience at X" | No repo needed: a short interview turns a job or project you describe into an accomplishment note. |
-| `refresh <draft>` | Regenerates an existing draft from your current notes (new metrics, renames, links). |
-| `status <company> <status>` | Marks an application `applied \| interviewing \| offer \| rejected \| ghosted` — same effect as clicking in the dashboard. |
-| `template` / `template <name>` | Lists the template library / switches the active resume template. Drop in your own resume (PDF/docx/image/tex) and it becomes a reusable template after a side-by-side fidelity check. |
-| `dashboard` | Opens the application tracker in your browser. |
+## What you get
 
-## What a tailor run does
+- A **one-page PDF** for each job, checked automatically: it really is one page, reads cleanly to the resume-scanning software companies use, and every line is filled out properly.
+- A **match report**: which of the job's requirements your resume covers, and which it honestly doesn't.
+- **Your files, on your computer.** Everything lives in a `resume/` folder as plain text you can open, edit, and back up. Nothing is uploaded anywhere.
 
-- **Multi-JD batches**: paste several JDs or posting URLs at once; each gets its own resume, generated in parallel.
-- **Bank-first assembly**: a deterministic matcher (`jd-match.mjs`, zero LLM calls) scores the JD against themed, already-verified bullets from your past drafts — repeat contexts reuse proven lines; fresh writing only happens for requirements the bank doesn't cover, and new verified material is harvested back in, so the system compounds.
-- **Hard rules**: exactly one page; ATS-clean text layer (verified by codepoint scan); every bullet fills its lines (template-dependent); compile-verified before you ever see it.
-- **Coverage report**: which of the JD's must-have keywords your draft covers and which are missing — missing terms are surfaced, never stuffed in.
-- **Cover letters + question answers**: opt-in, built from the same analysis, voiced per your `voice.md`.
-- **Tracking**: every draft lands in `applications.md`; open `dashboard.html` in Chrome/Edge to filter, chart by job type and match quality, and click statuses (applied / interviewing / offer / rejected / ghosted) that write straight back to the file.
+## For the curious (technical notes)
 
-## Layout
+The skill keeps your background as structured "accomplishment notes," reuses proven resume lines through a keyword-matching script (no AI call needed for repeat contexts), verifies every PDF by compiling and scanning it, and grows a reusable content bank as you go. Requirements: a LaTeX distribution (it offers to install [TinyTeX](https://yihui.org/tinytex/)) and optionally Node.js (it works without, slightly slower). Layout:
 
 ```
 skills/resume-tailor/
   SKILL.md            # the engine
-  assets/             # seeds copied into your workspace at init
-    templates/jake.tex, dashboard.html, jd-match.mjs,
-    format.md, voice-seed.md, cover-letter-*, identity-template.md,
-    bank-seed.md, applications-seed.md, sources-seed.md, project-note-template.md
+  assets/             # seeds copied into your resume/ folder on first run
 ```
 
 ## License
