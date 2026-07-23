@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Applications</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb;
+    --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --blue: #2a78d6; --blue-soft: #9ec5f4;
+    --st-drafted: #898781; --st-applied: #2a78d6; --st-interviewing: #eda100;
+    --st-offer: #008300; --st-rejected: #e34948; --st-ghosted: #4a3aa7;
+    --good-text: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19;
+      --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --baseline: #383835;
+      --border: rgba(255,255,255,0.10);
+      --blue: #3987e5; --blue-soft: #1c5cab;
+      --st-drafted: #898781; --st-applied: #3987e5; --st-interviewing: #c98500;
+      --st-offer: #008300; --st-rejected: #e66767; --st-ghosted: #9085e9;
+      --good-text: #0ca30c;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19;
+    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --baseline: #383835;
+    --border: rgba(255,255,255,0.10);
+    --blue: #3987e5; --blue-soft: #1c5cab;
+    --st-drafted: #898781; --st-applied: #3987e5; --st-interviewing: #c98500;
+    --st-offer: #008300; --st-rejected: #e66767; --st-ghosted: #9085e9;
+    --good-text: #0ca30c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--ink);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 20px 16px 48px; }
+  header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; }
+  header h1 { font-size: 18px; margin: 0 auto 0 0; font-weight: 650; }
+  .sub { color: var(--ink-2); font-size: 12px; width: 100%; }
+  button, select, input[type=search] {
+    font: inherit; color: var(--ink); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px;
+  }
+  button { cursor: pointer; }
+  button.primary { background: var(--blue); border-color: transparent; color: #fff; font-weight: 600; }
+  button:disabled { opacity: .45; cursor: default; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; align-items: center; }
+  .filters input[type=search] { flex: 1 1 160px; min-width: 140px; }
+  .pill { font-size: 12px; color: var(--ink-2); }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .tile .v { font-size: 26px; font-weight: 650; line-height: 1.1; }
+  .tile .l { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; min-width: 0; }
+  .card.full { grid-column: 1 / -1; }
+  .card h2 { font-size: 13px; font-weight: 650; margin: 0 0 10px; }
+  .card h2 small { color: var(--muted); font-weight: 400; }
+  @media (max-width: 720px) { .cards { grid-template-columns: 1fr; } }
+  svg text { fill: var(--muted); font-size: 11px; font-family: inherit; }
+  svg .val { fill: var(--ink-2); font-variant-numeric: tabular-nums; }
+  svg .cat { fill: var(--ink-2); }
+  .tablecard { margin-top: 10px; overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 760px; }
+  th, td { text-align: left; padding: 7px 10px; border-top: 1px solid var(--grid); font-size: 13px; vertical-align: top; }
+  thead th { border-top: none; color: var(--muted); font-weight: 600; font-size: 12px; cursor: pointer; user-select: none; white-space: nowrap; }
+  thead th.nosort { cursor: default; }
+  td.num, th.num { font-variant-numeric: tabular-nums; }
+  td .co { font-weight: 600; }
+  td .role { color: var(--ink-2); font-size: 12px; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-2); white-space: nowrap; }
+  .badge i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  select.status { padding: 3px 6px; border-radius: 6px; font-size: 12px; }
+  td.notes { max-width: 260px; color: var(--ink-2); font-size: 12px; cursor: text; }
+  td.notes:hover { outline: 1px dashed var(--baseline); outline-offset: 2px; }
+  td.notes input { width: 100%; font-size: 12px; padding: 3px 6px; }
+  .empty { background: var(--surface); border: 1px dashed var(--baseline); border-radius: 10px; padding: 28px; text-align: center; color: var(--ink-2); margin-top: 14px; }
+  .empty b { color: var(--ink); }
+  #tooltip { position: fixed; pointer-events: none; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 9px; font-size: 12px; box-shadow: 0 4px 14px rgba(0,0,0,.15); display: none; z-index: 10; max-width: 260px; }
+  #tooltip b { display: block; }
+  .msg { font-size: 12px; color: var(--ink-2); }
+  .msg.dirty { color: var(--good-text); font-weight: 600; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Applications</h1>
+    <span class="msg" id="fileMsg"></span>
+    <button id="openBtn" class="primary">Open applications.md</button>
+    <button id="reconnectBtn" class="hidden">Reconnect</button>
+    <button id="reloadBtn" class="hidden" title="Re-read the file">Reload</button>
+    <button id="downloadBtn" class="hidden" title="Download the updated applications.md (fallback browsers)">Download updated file</button>
+    <button id="themeBtn" title="Toggle theme">◐</button>
+    <span class="sub">Tracker for resume/applications.md — statuses and notes save straight back to the file (Chrome/Edge).</span>
+  </header>
+
+  <div id="empty" class="empty">
+    <b>No file open.</b><br>
+    Click <b>Open applications.md</b> and pick <code>resume/applications.md</code> from the vault.<br>
+    In Chrome/Edge the grant is remembered; elsewhere the page falls back to read-only
+    (<input type="file" id="fallbackInput" accept=".md" style="font-size:12px"> + download-to-save).
+  </div>
+
+  <div id="app" class="hidden">
+    <div class="filters">
+      <select id="fStatus"><option value="">All statuses</option></select>
+      <select id="fType"><option value="">All types</option></select>
+      <input type="search" id="fSearch" placeholder="Search company, role, notes…">
+      <span class="pill" id="countPill"></span>
+    </div>
+
+    <div class="tiles" id="tiles"></div>
+
+    <div class="cards">
+      <div class="card full">
+        <h2>Applications over time <small>· per day</small></h2>
+        <div id="timeChart"></div>
+      </div>
+      <div class="card">
+        <h2>By job type <small>· count and average match</small></h2>
+        <div id="typeChart"></div>
+      </div>
+      <div class="card">
+        <h2>By status</h2>
+        <div id="statusChart"></div>
+      </div>
+    </div>
+
+    <div class="card tablecard">
+      <table id="tbl">
+        <thead><tr>
+          <th data-k="date">Date</th>
+          <th data-k="company">Company / role</th>
+          <th data-k="type">Type</th>
+          <th class="nosort">Cover</th>
+          <th data-k="coverage" class="num">Match</th>
+          <th data-k="status">Status</th>
+          <th class="nosort">Notes</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div id="tooltip"></div>
+
+<script>
+"use strict";
+const STATUSES = ["drafted","applied","interviewing","offer","rejected","ghosted"];
+const STATUS_LABEL = { drafted:"Drafted", applied:"Applied", interviewing:"Interviewing", offer:"Offer", rejected:"Rejected", ghosted:"Ghosted" };
+const $ = s => document.querySelector(s);
+
+let fileHandle = null;   // FileSystemFileHandle when FSA is live
+let fileText = "";       // full file text (prose preserved)
+let data = [];           // parsed dataset
+let dirty = false;       // fallback mode: unsaved edits
+let sortKey = "date", sortDir = -1;
+
+/* ---------- theme ---------- */
+$("#themeBtn").onclick = () => {
+  const r = document.documentElement;
+  const dark = getComputedStyle(document.body).colorScheme.includes("dark");
+  r.dataset.theme = dark ? "light" : "dark";
+};
+
+/* ---------- tiny IndexedDB for the file handle ---------- */
+function idb() {
+  return new Promise((res, rej) => {
+    const rq = indexedDB.open("apps-dashboard", 1);
+    rq.onupgradeneeded = () => rq.result.createObjectStore("kv");
+    rq.onsuccess = () => res(rq.result);
+    rq.onerror = () => rej(rq.error);
+  });
+}
+async function idbSet(k, v) { const db = await idb(); return new Promise((res, rej) => { const tx = db.transaction("kv", "readwrite"); tx.objectStore("kv").put(v, k); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); }
+async function idbGet(k) { const db = await idb(); return new Promise((res, rej) => { const rq = db.transaction("kv").objectStore("kv").get(k); rq.onsuccess = () => res(rq.result); rq.onerror = () => rej(rq.error); }); }
+
+/* ---------- dataset <-> file ---------- */
+const BLOCK = /(```json\s*\n)([\s\S]*?)(\n```)/;
+function parseFile(text) {
+  const m = text.match(BLOCK);
+  if (!m) throw new Error("No ```json block found in the file.");
+  return JSON.parse(m[2]);
+}
+function serializeFile() {
+  return fileText.replace(BLOCK, (_, a, __, c) => a + JSON.stringify(data, null, 2) + c);
+}
+async function save() {
+  fileText = serializeFile();
+  if (fileHandle) {
+    try {
+      const w = await fileHandle.createWritable();
+      await w.write(fileText);
+      await w.close();
+      setMsg("Saved " + new Date().toLocaleTimeString());
+    } catch (e) { setMsg("Save failed: " + e.message, true); }
+  } else {
+    dirty = true;
+    $("#downloadBtn").classList.remove("hidden");
+    setMsg("Unsaved changes — use Download updated file, then replace resume/applications.md", true);
+  }
+}
+function setMsg(t, isDirty) { const el = $("#fileMsg"); el.textContent = t; el.className = "msg" + (isDirty ? " dirty" : ""); }
+function today() { return new Date().toLocaleDateString("sv"); }
+
+/* ---------- open / reconnect / fallback ---------- */
+const hasFSA = "showOpenFilePicker" in window;
+$("#openBtn").onclick = async () => {
+  if (!hasFSA) { $("#fallbackInput").click(); return; }
+  try {
+    const [h] = await window.showOpenFilePicker({ types: [{ description: "Markdown", accept: { "text/markdown": [".md"] } }] });
+    fileHandle = h;
+    await idbSet("handle", h);
+    await loadFromHandle();
+  } catch (e) { /* user cancelled */ }
+};
+$("#reconnectBtn").onclick = async () => {
+  if (!fileHandle) return;
+  if (await fileHandle.requestPermission({ mode: "readwrite" }) === "granted") await loadFromHandle();
+};
+$("#reloadBtn").onclick = () => fileHandle && loadFromHandle();
+$("#fallbackInput").onchange = async e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  fileText = await f.text();
+  try { data = parseFile(fileText); } catch (err) { setMsg(err.message, true); return; }
+  fileHandle = null;
+  boot("Read-only file loaded (fallback) — edits go through Download");
+};
+$("#downloadBtn").onclick = () => {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([serializeFile()], { type: "text/markdown" }));
+  a.download = "applications.md";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  dirty = false;
+  setMsg("Downloaded — replace resume/applications.md with it");
+};
+async function loadFromHandle() {
+  try {
+    const f = await fileHandle.getFile();
+    fileText = await f.text();
+    data = parseFile(fileText);
+    boot("Connected to " + fileHandle.name);
+  } catch (e) { setMsg("Could not read file: " + e.message, true); }
+}
+function boot(msg) {
+  setMsg(msg);
+  $("#empty").classList.add("hidden");
+  $("#app").classList.remove("hidden");
+  $("#openBtn").textContent = "Open another file";
+  $("#openBtn").classList.remove("primary");
+  if (fileHandle) $("#reloadBtn").classList.remove("hidden");
+  buildFilters();
+  render();
+}
+(async function init() {
+  if (!hasFSA) return;
+  try {
+    const h = await idbGet("handle");
+    if (!h) return;
+    fileHandle = h;
+    const p = await h.queryPermission({ mode: "readwrite" });
+    if (p === "granted") await loadFromHandle();
+    else { $("#reconnectBtn").classList.remove("hidden"); setMsg("Previously connected — click Reconnect"); }
+  } catch (e) { /* first visit */ }
+})();
+
+/* ---------- filters ---------- */
+function buildFilters() {
+  const fill = (sel, values, labeler) => {
+    const cur = sel.value;
+    sel.length = 1;
+    values.forEach(v => sel.add(new Option(labeler ? labeler(v) : v, v)));
+    sel.value = cur;
+  };
+  fill($("#fStatus"), STATUSES.filter(s => data.some(d => d.status === s)), s => STATUS_LABEL[s]);
+  fill($("#fType"), [...new Set(data.map(d => d.type))].sort());
+}
+["fStatus","fType","fSearch"].forEach(id => $("#" + id).addEventListener("input", render));
+
+function filtered() {
+  const st = $("#fStatus").value, ty = $("#fType").value, q = $("#fSearch").value.trim().toLowerCase();
+  return data.filter(d =>
+    (!st || d.status === st) &&
+    (!ty || d.type === ty) &&
+    (!q || [d.company, d.role, d.notes, d.id].join(" ").toLowerCase().includes(q)));
+}
+
+/* ---------- tooltip ---------- */
+const tip = $("#tooltip");
+function showTip(e, html) {
+  tip.innerHTML = html;
+  tip.style.display = "block";
+  const x = Math.min(e.clientX + 12, innerWidth - tip.offsetWidth - 8);
+  const y = Math.min(e.clientY + 12, innerHeight - tip.offsetHeight - 8);
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+function hideTip() { tip.style.display = "none"; }
+
+/* ---------- rendering ---------- */
+function render() {
+  const rows = filtered();
+  $("#countPill").textContent = rows.length + " of " + data.length + " shown";
+  renderTiles(rows); renderTime(rows); renderTypes(rows); renderStatuses(rows); renderTable(rows);
+}
+
+function renderTiles(rows) {
+  const c = s => rows.filter(d => d.status === s).length;
+  const submitted = rows.filter(d => d.status !== "drafted").length;
+  const positive = c("interviewing") + c("offer");
+  const rate = submitted ? Math.round(100 * positive / submitted) + "%" : "—";
+  const tiles = [
+    [rows.length, "Total drafted"],
+    [submitted, "Submitted"],
+    [c("interviewing"), "Interviewing"],
+    [c("offer"), "Offers"],
+    [c("rejected") + c("ghosted"), "Rejected + ghosted"],
+    [rate, "Interview rate"],
+  ];
+  $("#tiles").innerHTML = tiles.map(([v, l]) =>
+    `<div class="tile"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
+}
+
+function esc(s) { return String(s ?? "").replace(/[&<>"]/g, ch => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[ch])); }
+
+function renderTime(rows) {
+  const el = $("#timeChart");
+  if (!rows.length) { el.innerHTML = '<div class="msg">No data for current filters.</div>'; return; }
+  const byDay = {};
+  rows.forEach(d => byDay[d.date] = (byDay[d.date] || 0) + 1);
+  const dates = Object.keys(byDay).sort();
+  const start = new Date(dates[0] + "T00:00"), end = new Date(dates[dates.length - 1] + "T00:00");
+  const days = [];
+  for (let t = new Date(start); t <= end; t.setDate(t.getDate() + 1)) days.push(t.toLocaleDateString("sv"));
+  const max = Math.max(...Object.values(byDay));
+  const W = Math.max(el.clientWidth || 600, 320), H = 150, padL = 24, padB = 20, padT = 8;
+  const iw = (W - padL - 8) / days.length;
+  const bw = Math.min(Math.max(iw - 2, 2), 26);
+  let bars = "", ticks = "";
+  days.forEach((day, i) => {
+    const v = byDay[day] || 0;
+    const x = padL + i * iw + (iw - bw) / 2;
+    const h = v ? Math.max((H - padB - padT) * v / max, 3) : 0;
+    const y = H - padB - h;
+    if (v) bars += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="4" fill="var(--blue)" data-tip="<b>${day}</b>${v} application${v > 1 ? "s" : ""}"/>`;
+    bars += `<rect x="${(padL + i * iw).toFixed(1)}" y="${padT}" width="${iw.toFixed(1)}" height="${H - padB - padT}" fill="transparent" data-tip="<b>${day}</b>${v} application${v === 1 ? "" : "s"}"/>`;
+    const every = Math.ceil(days.length / Math.floor((W - padL) / 64));
+    if (i % every === 0) ticks += `<text x="${(padL + i * iw + iw / 2).toFixed(1)}" y="${H - 5}" text-anchor="middle">${day.slice(5)}</text>`;
+  });
+  el.innerHTML =
+    `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="Applications per day">
+      <line x1="${padL}" y1="${H - padB}" x2="${W - 4}" y2="${H - padB}" stroke="var(--baseline)"/>
+      <text x="${padL - 6}" y="${padT + 10}" text-anchor="end" class="val">${max}</text>
+      ${bars}${ticks}
+    </svg>`;
+  wireTips(el);
+}
+
+function hBarChart(el, items, ariaLabel) {
+  // items: {label, value, color, extra, tip}
+  if (!items.length) { el.innerHTML = '<div class="msg">No data for current filters.</div>'; return; }
+  const max = Math.max(...items.map(i => i.value));
+  const W = Math.max(el.clientWidth || 400, 280), rowH = 26, padL = 108, padR = 84;
+  const H = items.length * rowH + 6;
+  let out = "";
+  items.forEach((it, i) => {
+    const y = i * rowH + 4;
+    const w = max ? Math.max((W - padL - padR) * it.value / max, 3) : 3;
+    out += `<text x="${padL - 8}" y="${y + 14}" text-anchor="end" class="cat">${esc(it.label)}</text>` +
+      `<rect x="${padL}" y="${y}" width="${w.toFixed(1)}" height="18" rx="4" fill="${it.color || "var(--blue)"}" data-tip="${esc(it.tip)}"/>` +
+      `<text x="${padL + w + 6}" y="${y + 14}" class="val">${it.value}${it.extra || ""}</text>`;
+  });
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="${ariaLabel}">${out}</svg>`;
+  wireTips(el);
+}
+
+function renderTypes(rows) {
+  const groups = {};
+  rows.forEach(d => (groups[d.type] = groups[d.type] || []).push(d));
+  const items = Object.keys(groups).sort((a, b) => groups[b].length - groups[a].length).map(t => {
+    const g = groups[t];
+    const cov = g.filter(d => d.coverage && typeof d.coverage.pct === "number");
+    const avg = cov.length ? Math.round(cov.reduce((s, d) => s + d.coverage.pct, 0) / cov.length) : null;
+    return {
+      label: t, value: g.length,
+      extra: avg !== null ? ` · ${avg}% match` : " · match —",
+      tip: `<b>${t}</b>${g.length} application${g.length > 1 ? "s" : ""}<br>avg keyword match: ${avg !== null ? avg + "%" : "not measured yet"}`,
+    };
+  });
+  hBarChart($("#typeChart"), items, "Applications by job type with average keyword match");
+}
+
+function renderStatuses(rows) {
+  const items = STATUSES.filter(s => rows.some(d => d.status === s)).map(s => {
+    const n = rows.filter(d => d.status === s).length;
+    return { label: STATUS_LABEL[s], value: n, color: `var(--st-${s})`, tip: `<b>${STATUS_LABEL[s]}</b>${n} application${n > 1 ? "s" : ""}` };
+  });
+  hBarChart($("#statusChart"), items, "Applications by status");
+}
+
+function wireTips(el) {
+  el.querySelectorAll("[data-tip]").forEach(n => {
+    n.addEventListener("mousemove", e => showTip(e, n.dataset.tip));
+    n.addEventListener("mouseleave", hideTip);
+  });
+}
+
+/* ---------- table ---------- */
+document.querySelectorAll("thead th[data-k]").forEach(th => th.onclick = () => {
+  const k = th.dataset.k;
+  if (sortKey === k) sortDir *= -1; else { sortKey = k; sortDir = k === "date" ? -1 : 1; }
+  render();
+});
+
+function renderTable(rows) {
+  const get = d => {
+    if (sortKey === "coverage") return d.coverage && typeof d.coverage.pct === "number" ? d.coverage.pct : -1;
+    if (sortKey === "status") return STATUSES.indexOf(d.status);
+    return (d[sortKey] ?? "") + "";
+  };
+  const sorted = [...rows].sort((a, b) => {
+    const x = get(a), y = get(b);
+    return (x < y ? -1 : x > y ? 1 : 0) * sortDir;
+  });
+  $("#tbl tbody").innerHTML = sorted.map(d => {
+    const cov = d.coverage && typeof d.coverage.pct === "number" ? d.coverage.pct + "%" : "—";
+    const covTip = d.coverage && d.coverage.missing && d.coverage.missing.length ? ` title="missing: ${esc(d.coverage.missing.join(", "))}"` : "";
+    return `<tr data-id="${esc(d.id)}">
+      <td class="num">${esc(d.date)}</td>
+      <td><span class="co">${esc(d.company || "—")}</span><br><span class="role">${esc(d.role)}</span></td>
+      <td>${esc(d.type)}</td>
+      <td>${d.coverLetter ? "✓" : ""}</td>
+      <td class="num"${covTip}>${cov}</td>
+      <td><span class="badge"><i style="background:var(--st-${esc(d.status)})"></i>
+        <select class="status" aria-label="Status for ${esc(d.company || d.role)}">
+          ${STATUSES.map(s => `<option value="${s}"${s === d.status ? " selected" : ""}>${STATUS_LABEL[s]}</option>`).join("")}
+        </select></span><br><span class="role">${esc(d.statusUpdated || "")}</span></td>
+      <td class="notes" title="Click to edit">${esc(d.notes || "")}</td>
+    </tr>`;
+  }).join("");
+
+  $("#tbl tbody").querySelectorAll("select.status").forEach(sel => sel.onchange = async e => {
+    const rec = data.find(d => d.id === e.target.closest("tr").dataset.id);
+    rec.status = e.target.value;
+    rec.statusUpdated = today();
+    await save();
+    buildFilters(); render();
+  });
+  $("#tbl tbody").querySelectorAll("td.notes").forEach(td => td.onclick = () => {
+    if (td.querySelector("input")) return;
+    const rec = data.find(d => d.id === td.closest("tr").dataset.id);
+    const inp = document.createElement("input");
+    inp.value = rec.notes || "";
+    td.textContent = ""; td.appendChild(inp); inp.focus();
+    const commit = async () => {
+      if (inp.value !== (rec.notes || "")) { rec.notes = inp.value; await save(); }
+      render();
+    };
+    inp.addEventListener("blur", commit);
+    inp.addEventListener("keydown", e => { if (e.key === "Enter") inp.blur(); if (e.key === "Escape") { inp.value = rec.notes || ""; inp.blur(); } });
+  });
+}
+
+addEventListener("resize", () => { if (!$("#app").classList.contains("hidden")) render(); });
+</script>
+</body>
+</html>

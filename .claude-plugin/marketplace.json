@@ -1,0 +1,25 @@
+{
+  "name": "resume-tailor",
+  "owner": {
+    "name": "Kevin Cui",
+    "url": "https://github.com/kevincui1034"
+  },
+  "metadata": {
+    "description": "A single-skill marketplace distributing the Resume Tailor skill for Claude Code."
+  },
+  "plugins": [
+    {
+      "name": "resume-tailor",
+      "source": "./",
+      "description": "Tailor one-page LaTeX resumes per job description from verified accomplishment notes mined from your real repos and resume. Batch multi-JD tailoring, cover letters and question answers in your voice, deterministic keyword coverage, an interactive application tracker, and drop-in custom templates.",
+      "version": "1.0.0",
+      "keywords": [
+        "resume",
+        "cover-letter",
+        "job-search",
+        "latex",
+        "ats"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+%-------------------------
+% Cover Letter - MLA-style block letter.
+% Left-aligned stacked letterhead, ~1in margins, 1.4 line spacing in the body.
+% Hard rules: ONE page, no em dashes, PDF text layer stays plain ASCII.
+%   - Natural contractions ARE allowed: \pdfglyphtounicode remaps the apostrophe glyph to
+%     U+0027, so "I'm / it's / I'd" display normally but extract as ASCII '.
+% Voice/structure contract: resume/cover-letter-format.md (voice rules in resume/voice.md).
+% <<PLACEHOLDER>> tokens fill from identity.md; needs the setspace package.
+%-------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage[top=0.9in, bottom=0.6in, left=1in, right=1in]{geometry}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage[hidelinks]{hyperref}
+\usepackage{setspace}
+\usepackage[english]{babel}
+\input{glyphtounicode}
+\pdfglyphtounicode{quoteright}{0027}   % apostrophes extract as ASCII '
+\pdfgentounicode=1
+
+\pagestyle{empty}
+\urlstyle{same}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+%----------LETTERHEAD (left-aligned, single-spaced stack; links plain/unadorned)----------
+\begin{singlespace}
+<<FULL NAME>> \\
+<<PHONE>> \\
+\href{mailto:<<EMAIL>>}{<<EMAIL>>} \\
+\href{https://<<LINKEDIN URL>>}{<<LINKEDIN>>} \\
+\href{https://<<GITHUB URL>>}{<<GITHUB>>} \\
+\href{https://<<WEBSITE>>}{<<WEBSITE>>}
+\end{singlespace}
+
+\vspace{9pt}
+
+Dear <<SALUTATION - default "Hiring Team">>,
+
+\vspace{6pt}
+
+\begin{spacing}{1.4}
+\setlength{\parskip}{5pt}
+
+<<PARAGRAPH 1 - who I am + why THIS company. A one-line self-introduction from
+identity.md + the role (and team, if named). Then a concrete, company-specific
+hook tied to their actual product - never generic praise.>>
+
+<<PARAGRAPH 2 - how I work + what I've built. Personal experience leads; the
+centerpiece project appears as light supporting texture (1-2 sentences, no
+metrics, no architecture walkthrough). An honest personal reflection is welcome
+when it's genuinely the user's.>>
+
+<<PARAGRAPH 3 - values + close. Weave the toolkit in lightly (never recite a
+skills list), name a couple of role-tied qualities, then a mission-level close +
+"Thank you for considering my application, and I'd welcome the chance to talk further.">>
+
+\end{spacing}
+
+\vspace{6pt}
+
+\begin{singlespace}
+Best regards, \\
+<<FULL NAME>>
+\end{singlespace}
+
+\end{document}
+
+% FITTING TO ONE PAGE (tune in this order until Pages: 1, keeping the ~1.4 look):
+%   1. trim the wordiest sentences;
+%   2. drop \parskip 5pt -> 4pt, or the body spacing 1.4 -> 1.35;
+%   3. shave the bottom margin (0.6in -> 0.55in).
+% A slightly short last page is fine; the hard rule is one page, not a filled page.

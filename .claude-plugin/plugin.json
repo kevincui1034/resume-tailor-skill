@@ -1,0 +1,24 @@
+{
+  "name": "resume-tailor",
+  "displayName": "Resume Tailor",
+  "version": "1.0.0",
+  "description": "Turn your real work into targeted, one-page LaTeX resumes. Imports your existing resume and mines your repos into verified accomplishment notes, then tailors a resume per job description (multi-JD batches in parallel), writes matching cover letters and application-question answers in your voice, checks keyword coverage deterministically, tracks every application in an interactive local dashboard, and supports drop-in custom resume templates. Every bullet traces to real work - nothing is invented.",
+  "author": {
+    "name": "Kevin Cui",
+    "url": "https://github.com/kevincui1034"
+  },
+  "homepage": "https://github.com/kevincui1034/resume-tailor-skill",
+  "repository": "https://github.com/kevincui1034/resume-tailor-skill",
+  "license": "MIT",
+  "keywords": [
+    "resume",
+    "cover-letter",
+    "job-search",
+    "latex",
+    "job-application",
+    "ats",
+    "tailoring",
+    "claude-code",
+    "skill"
+  ]
+}
