@@ -30,6 +30,21 @@ Just talk to it. For example:
 - **"Open my dashboard"** — a page in your browser with charts of everywhere you've applied, what type of jobs, how well you matched them, and buttons to update each application's status.
 - **"Use my resume's design"** — hand it your current resume and it reuses your exact layout for every future resume, instead of the built-in design. You approve the copy before it's used.
 
+## Commands
+
+Everything above works in plain words, but if you prefer exact commands, these all work too (as natural language or `/resume-tailor <command>`):
+
+| Command | What it does |
+| --- | --- |
+| `tailor <job posting \| link \| role>` — one or several | One tailored, compiled one-page resume per job. Several postings run in parallel; every posting is saved for reference; each resume gets a match report. Asks once per run whether you want cover letters, and answers any essay questions found in the posting. |
+| `connect <repo path or GitHub link>` — one or several | Studies each project (its files and your commit history) and adds what you built to your background. Several repos are processed in parallel with one review at the end. Never changes your repos. |
+| `connect` | Lists your connected projects and offers a re-sync so new work lands in your background. |
+| "add my experience at X" | No code needed: a short interview turns a job or project you describe into background material. |
+| `refresh <draft>` | Regenerates an existing resume from your current background (new numbers, renames, links). |
+| `status <company> <status>` | Marks an application `applied \| interviewing \| offer \| rejected \| ghosted` — same effect as clicking in the dashboard. |
+| `template` / `template <name>` | Lists the available resume designs / switches the active one. Hand it your own resume and it becomes a reusable design after a side-by-side check you approve. |
+| `dashboard` | Opens the application tracker in your browser. |
+
 ## What you get
 
 - A **one-page PDF** for each job, checked automatically: it really is one page, reads cleanly to the resume-scanning software companies use, and every line is filled out properly.
