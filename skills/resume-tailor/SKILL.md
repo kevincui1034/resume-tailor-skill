@@ -1,6 +1,6 @@
 ---
 name: resume-tailor
-description: Tailor one-page LaTeX resumes to job descriptions from the user's real, verified work. Use when the user wants to tailor/build a resume for a JD or role, paste job descriptions or posting URLs (single or batch), write a cover letter or application-question answers, track applications (applied/interviewing/ghosted/rejected), connect a local or GitHub repo (or describe a project/job directly) as resume material, open the application dashboard, switch or drop in a resume template, or set up a resume workspace. Triggers on "tailor my resume", "resume for this JD", "cover letter for", "mark <company> as <status>", "connect this repo" / "connect these repos", "add my experience at", "open my dashboard", "change resume template".
+description: Tailor one-page LaTeX resumes to job descriptions from the user's real, verified work. Use when the user wants to tailor/build a resume for a JD or role, paste job descriptions or posting URLs (single or batch), write a cover letter or application-question answers, track applications (applied/interviewing/ghosted/rejected), connect a local or GitHub repo (or describe a project/job directly) as resume material, open the application dashboard, switch or drop in a resume template, archive old drafts or clear the archive, or set up a resume workspace. Triggers on "tailor my resume", "resume for this JD", "cover letter for", "mark <company> as <status>", "connect this repo" / "connect these repos", "add my experience at", "open my dashboard", "change resume template", "archive my drafts", "clear the archive".
 ---
 
 # Resume Tailor
@@ -18,6 +18,8 @@ Turns a job description into a targeted, one-page LaTeX resume assembled from th
 | "connect <repo path(s) / GitHub URL(s)>" — one or several — "add this repo / project / my experience at X" | **Connect** |
 | "connect" alone, "what sources are connected", "sync my repos" | **Connect** (list + sync) |
 | "refresh <draft>" | **Refresh** |
+| "archive", "archive my drafts", "clean out drafts" | **Archive** (moves drafts out; reversible) |
+| "clear", "clear the archive", "delete the archived drafts" | **Clear** (deletes the archive; destructive) |
 | "mark <company> as interviewing/ghosted/rejected/…" | **Status** |
 | "change/list/drop in template" | **Template** |
 | "dashboard", "open/show my applications" | **Dashboard** |
@@ -36,6 +38,7 @@ resume/
   sources.md           # registry of connected context sources (repos / GitHub / manual) -> notes
   targets/             # auto-saved JDs, one note per posting
   drafts/              # generated .tex + .pdf (+ _answers.md)
+  archive/             # retired drafts moved out of drafts/ (emptied only by Clear mode)
   bank.md              # reuse memory: themes -> proven bullets/cover skeletons/skills (JSON block)
   applications.md      # tracker dataset (JSON block) - feeds the dashboard
   dashboard.html       # local interactive tracker (File System Access write-back)
@@ -139,6 +142,26 @@ Open `resume/dashboard.html` in the user's default browser: Windows → PowerShe
 ## Refresh mode — "refresh <draft>"
 
 Regenerate an existing draft from its saved target + the **current** `projects/` notes (rebrands and new metrics land automatically). For a legacy draft with no target note, reconstruct from its `% SOURCING` block and confirm. Same filename — overwrite `.tex`/`.pdf`, full verification, refresh the target's Tailoring-notes trailer and the `applications.md` record's notes.
+
+## Archive mode — "archive"
+
+Empties the working `drafts/` folder by **moving** its contents into `archive/` (created on first use). Nothing is deleted here; archiving is undone by moving files back.
+
+- **Default is everything in `drafts/`** — `.tex`, `.pdf`, `_cover.*`, `_answers.md`, all of it. With arguments (`archive <draft-name> …`) move only the named drafts **plus their companions** (cover letter, answers, PDFs) so a draft never gets split across the two folders. Never touch `targets/`, `projects/`, `bank.md`, `applications.md`'s prose, or any anchor file.
+- Show what will move (count, plus the names or a grouped summary if the list is long) and confirm once. Keep the now-empty `drafts/` folder in place.
+- **Name collision** in `archive/`: the incoming (newer) file replaces the archived copy — name those files in the report so the user knows an older version is gone.
+- **Repoint the tracker:** in `applications.md`'s JSON block, records whose `draft`/`coverLetter` files moved get their paths updated to the `archive/` location. Records themselves stay untouched — the application still happened; only the file moved.
+- Refresh mode does not look in `archive/`. To rework an archived draft, move it back to `drafts/` first, or just re-tailor from its saved target note — **targets are never archived**, so nothing needed to regenerate a draft is ever lost.
+- Log the run (`## [YYYY-MM-DD] tailor-archive | <N> files -> archive/`) (+ commit if configured).
+
+## Clear mode — "clear"
+
+Permanently deletes the contents of `archive/`. This is the only destructive mode in the skill; treat it that way.
+
+- **Scope is `archive/` and nothing else.** Never delete from `drafts/` (moving them out is Archive mode's job), and never run as a side effect of another mode — Clear happens only when the user asks for it by name.
+- List exactly what will go (count + filenames) and get an **explicit** confirmation before deleting. If `archive/` is missing or already empty, say so and stop. Keep the empty `archive/` folder afterwards.
+- `applications.md` records that pointed into `archive/` **keep their entry** — set the now-dead `draft`/`coverLetter` value to `null` and note the clear date in `notes`. Never drop application history because a file was deleted.
+- Log the run (`## [YYYY-MM-DD] tailor-clear | <N> files deleted from archive/`) (+ commit if configured — once cleared, git history is the only recovery path, so the commit matters).
 
 ## Status mode — "mark <company> as <status>"
 

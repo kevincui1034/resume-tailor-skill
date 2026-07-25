@@ -12,7 +12,7 @@
       "name": "resume-tailor",
       "source": "./",
       "description": "Tailor one-page LaTeX resumes per job description from verified accomplishment notes built from your connected repos (local or GitHub) or your own descriptions. Batch multi-JD tailoring, cover letters and question answers in your voice, deterministic keyword coverage, an interactive application tracker dashboard, and drop-in custom templates.",
-      "version": "1.3.1",
+      "version": "1.4.0",
       "keywords": [
         "resume",
         "cover-letter",

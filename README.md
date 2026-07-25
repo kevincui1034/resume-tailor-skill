@@ -29,6 +29,7 @@ Just talk to it. For example:
 - **"I applied to Acme"** / **"Acme rejected me"** / **"I'm interviewing at Acme"** — it keeps your application list up to date.
 - **"Open my dashboard"** — a page in your browser with charts of everywhere you've applied, what type of jobs, how well you matched them, and buttons to update each application's status.
 - **"Use my resume's design"** — hand it your current resume and it reuses your exact layout for every future resume, instead of the built-in design. You approve the copy before it's used.
+- **"Archive my drafts"** — sweeps old resumes out of the drafts folder into `resume/archive/` so only current work is in front of you. Later, **"clear the archive"** deletes them for good, after it shows you the list and you confirm.
 
 ## Commands
 
@@ -44,6 +45,15 @@ Everything above works in plain words, but if you prefer exact commands, these a
 | `status <company> <status>` | Marks an application `applied \| interviewing \| offer \| rejected \| ghosted` — same effect as clicking in the dashboard. |
 | `template` / `template <name>` | Lists the available resume designs / switches the active one. Hand it your own resume and it becomes a reusable design after a side-by-side check you approve. |
 | `dashboard` | Opens the application tracker in your browser. |
+| `archive` | Moves everything in your drafts folder into `resume/archive/` so drafts only holds current work. Nothing is deleted, and the job postings are kept, so any resume can be rebuilt. Name a draft to archive just that one. |
+| `clear` | Permanently deletes what's in `resume/archive/`. Asks you to confirm first, and never touches your current drafts. Your application history stays either way. |
+
+## What's new in v1.4.0
+
+**Draft housekeeping.** Resumes pile up fast when you apply to a lot of jobs, so there are now two commands for keeping the folder under control:
+
+- **`archive`** sweeps your drafts folder into `resume/archive/` so only current work sits in front of you. It's a move, not a delete, and it takes the matching cover letter, answers, and PDFs along with each resume. Your application list keeps every entry and just points at the new location, and the job postings are never archived, so any resume can be rebuilt with `refresh`. Name a draft (`archive kevincui_backend_acme`) to archive only that one.
+- **`clear`** permanently deletes what's in the archive, after showing you the exact list and waiting for a yes. It never touches your current drafts, and your application history stays intact either way.
 
 ## What you get
 
