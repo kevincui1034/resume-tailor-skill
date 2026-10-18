@@ -54,6 +54,14 @@ Everything above works in plain words, but if you prefer exact commands, these a
 | `apply <company \| link \| "these">` | Fills and submits the application in your browser (Claude in Chrome) from your draft + saved profile. Semi-manual reviews before submitting; automatic submits and reports. Without a browser hookup, you get a paste-ready pack. |
 | `settings` / `set <field> <value>` | Shows or sets how the applier behaves (answer mode, search recency, browser use) and your application profile (authorization, salary, start date, EEO defaults). |
 
+## What's new in v1.6.0
+
+**The applier ships with field experience.** Apply mode now comes with a **portal playbook** — step-by-step driving notes distilled from dozens of real submissions on Workday, Phenom-style career sites, and IBM Careers (plus stubs for Greenhouse, Ashby, and iCIMS): which widgets lie, which Continue button isn't really Submit, why a university picker "finds nothing" until the country field is set, and how to spot the fake employers resume parsers invent from your projects. Every new portal you drive gets its own section written afterwards, so the second application on any system costs a fraction of the first. Also new:
+
+- a **scout step** before every apply — postings routinely contradict their own URLs (country, onsite days, clearance), and it checks the portal's "my applications" list first so you never double-apply;
+- an opt-in **SSO rule** (`sso sign-in: allowed`) — it may click your already-signed-in account on a sign-in chooser, and will still never type a password or 2FA code;
+- a **skill self-ratings** setting for the portals that ask you to grade yourself per skill.
+
 ## What's new in v1.5.0
 
 **It can now find jobs and apply for you.**
@@ -66,7 +74,7 @@ Everything above works in plain words, but if you prefer exact commands, these a
 
 **Draft housekeeping.** Resumes pile up fast when you apply to a lot of jobs, so there are now two commands for keeping the folder under control:
 
-- **`archive`** sweeps your drafts folder into `resume/archive/` so only current work sits in front of you. It's a move, not a delete, and it takes the matching cover letter, answers, and PDFs along with each resume. Your application list keeps every entry and just points at the new location, and the job postings are never archived, so any resume can be rebuilt with `refresh`. Name a draft (`archive kevincui_backend_acme`) to archive only that one.
+- **`archive`** sweeps your drafts folder into `resume/archive/` so only current work sits in front of you. It's a move, not a delete, and it takes the matching cover letter, answers, and PDFs along with each resume. Your application list keeps every entry and just points at the new location, and the job postings are never archived, so any resume can be rebuilt with `refresh`. Name a draft (`archive jdoe_backend_acme`) to archive only that one.
 - **`clear`** permanently deletes what's in the archive, after showing you the exact list and waiting for a yes. It never touches your current drafts, and your application history stays intact either way.
 
 ## What you get

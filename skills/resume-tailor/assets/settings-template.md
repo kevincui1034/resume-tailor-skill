@@ -8,6 +8,7 @@ How the applier behaves, plus the facts application forms keep asking for. **Fac
 - **job-search recency:** recent <!-- recent = newest first, prefer postings <= 30 days old | all = rank purely by fit -->
 - **job-search results:** 10
 - **browser apply:** ask <!-- ask | on | off — autofill + submit via Claude in Chrome when available -->
+- **sso sign-in:** ask <!-- ask | allowed (may click an already-signed-in account on an SSO chooser; never types passwords or 2FA codes) | off -->
 
 ## Application profile
 
@@ -40,3 +41,4 @@ Optional on every US form. The default answer is "prefer not to say"; change a l
 
 - **how did you hear about us:** the job board or site where the posting was found (answer plainly)
 - **references:** available on request
+- **skill self-ratings:** ask <!-- some portals ask you to rate yourself per skill; either "ask", or record a policy, e.g. "leave pre-filled values as found; top rung for <skills you own>, second-highest elsewhere" -->

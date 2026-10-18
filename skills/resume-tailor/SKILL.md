@@ -45,6 +45,7 @@ resume/
   archive/             # retired drafts moved out of drafts/ (emptied only by Clear mode)
   bank.md              # reuse memory: themes -> proven bullets/cover skeletons/skills (JSON block)
   applications.md      # tracker dataset (JSON block) - feeds the dashboard
+  portal-playbook.md   # per-portal driving knowledge - read before each apply, extended after each first drive
   dashboard.html       # local interactive tracker (File System Access write-back)
   scripts/jd-match.mjs # deterministic JD->theme matcher + keyword-coverage checker
   log.md               # append-only run log
@@ -54,7 +55,7 @@ resume/
 
 ## Init wizard (first run, or when any anchor file is missing)
 
-**Default everything; ask one question.** Copy the seeds from this skill's `assets/` directory into the workspace — `templates/jake.tex` (+ activate as `template.tex`, stamped `% ACTIVE TEMPLATE: jake`), `format.md`, `voice-seed.md → voice.md`, `cover-letter-format.md`, `cover-letter-template.tex`, `identity-template.md → identity.md`, `settings-template.md → settings.md`, `bank-seed.md → bank.md`, `applications-seed.md → applications.md`, `sources-seed.md → sources.md`, `dashboard.html`, `jd-match.mjs → scripts/` — then ask only:
+**Default everything; ask one question.** Copy the seeds from this skill's `assets/` directory into the workspace — `templates/jake.tex` (+ activate as `template.tex`, stamped `% ACTIVE TEMPLATE: jake`), `format.md`, `voice-seed.md → voice.md`, `cover-letter-format.md`, `cover-letter-template.tex`, `identity-template.md → identity.md`, `settings-template.md → settings.md`, `portal-playbook-template.md → portal-playbook.md`, `bank-seed.md → bank.md`, `applications-seed.md → applications.md`, `sources-seed.md → sources.md`, `dashboard.html`, `jd-match.mjs → scripts/` — then ask only:
 
 > **"Give me your current resume (any format), links or paths to projects you've worked on, or just tell me about your work — any mix is fine."**
 
@@ -145,16 +146,18 @@ Take a finished draft through the company's real application form. Inputs: the c
 
 **Browser or fallback.** Look for browser-automation tools in this order: **Claude in Chrome** (`mcp__claude-in-chrome__*`; it may first surface as a single `enable__mcp__claude-in-chrome` tool — enable it, and read its usage skill first if the session lists one), the Claude desktop app's built-in browser (`mcp__Claude_Browser__*`), then any Playwright/Puppeteer-style MCP. **None →** emit `drafts/<tokens>_apply.md` instead: a paste-ready pack with every form fact laid out field-by-field (contact + links, eligibility, logistics, EEO per settings), the question answers, and the file paths to upload — and mention that connecting Claude in Chrome unlocks the hands-off version.
 
-**Autopilot, per application:**
-1. Open the posting; click through to the form.
-2. Fill facts: contact/links/education from `identity.md`; authorization, logistics, comp, EEO from `settings.md`. **A fact neither file holds is never guessed** — semi-manual asks the user on the spot; automatic leaves it blank when optional, otherwise pauses that application and flags it in the run report.
-3. Upload the resume PDF (and the cover PDF where there's a slot).
-4. Free-text questions → **Answer modes**. Record every answer actually entered in `drafts/<tokens>_answers.md` (marked "as submitted").
-5. **Hard stops, every mode:** account creation and login walls, CAPTCHAs, identity or payment verification, anything outside the application flow. Hand them to the user (semi-manual) or flag + skip to the next application (automatic). The browser is the user's real signed-in session — act only inside the form, never store credentials.
-6. **Submit:** semi-manual → show the filled form (screenshot or field summary) and wait for the go-ahead; automatic → submit and capture the confirmation (text or screenshot).
-7. Update the `applications.md` record: `status: applied`, `statusUpdated`, `notes` gain how it went out (`via browser — auto` / `— reviewed`) + the posting URL. Log (`## [YYYY-MM-DD] tailor-apply | <company> -> applied (auto|reviewed)`) (+ commit if configured).
+**Scout first.** Read the live posting in the browser before relying on the URL or the saved JD — postings contradict both (country, onsite days, clearance, years-of-experience floors), and a work-authorization answer that is true at home is false for a role in another country. Report hard blockers and let the user decide; never quietly drop a job or quietly apply to an impossible one. If the portal keeps a "my applications" list, **check it before filling anything** — duplicates are invisible from the job page and can't be unsent.
 
-Batch applies run **sequentially** — one browser, one form at a time — even when the drafts were tailored in parallel.
+**Autopilot, per application:**
+1. Open the posting; **read `portal-playbook.md`'s section for this portal type** (the seed covers Workday, Phenom-style sites, and IBM Careers, with stubs for Greenhouse/Ashby/iCIMS). No section yet → drive carefully and **write the section afterwards** — that is what makes the second application on that system cheap.
+2. Fill facts: contact/links/education from `identity.md`; authorization, logistics, comp, EEO from `settings.md`. **A fact neither file holds is never guessed** — semi-manual asks the user on the spot; automatic leaves it blank when optional, otherwise pauses that application and flags it in the run report. **Verify every value after entry** — resume parsers and typeahead widgets both lie, and parsers routinely hoist *projects* into work history as fake employers (the missing job title is the tell; delete those rows).
+3. Upload the resume PDF (and the cover PDF where there's a slot). Re-check uploads after any validation failure — some portals silently clear them.
+4. Free-text questions → **Answer modes**. Record every answer actually entered in `drafts/<tokens>_answers.md` (marked "as submitted").
+5. **Hard stops, every mode:** account creation and login walls, CAPTCHAs, identity or payment verification, anything outside the application flow. One narrow exception, off by default: with `sso sign-in: allowed` in `settings.md`, clicking an **already-authenticated** account on an SSO provider's chooser is permitted — typing a password or 2FA code never is. Everything else goes to the user (semi-manual) or is flagged + skipped (automatic). The browser is the user's real signed-in session — act only inside the form, never store credentials.
+6. **Submit:** semi-manual → show the filled form (screenshot or field summary) and wait for the go-ahead; automatic → submit. Either way, **confirm from the site's own signal** — a confirmation page, an application/req number, or the portal's own applications list. Some portals never flip the Apply button; never record `applied` on the strength of having clicked something.
+7. Update the `applications.md` record: `status: applied`, `statusUpdated`, `notes` gain how it went out (`via browser — auto` / `— reviewed`) + the posting URL. Anything learned about the portal goes into `portal-playbook.md`. Log (`## [YYYY-MM-DD] tailor-apply | <company> -> applied (auto|reviewed)`) (+ commit if configured).
+
+Batch applies run **sequentially** — one browser, one form at a time — even when the drafts were tailored in parallel. **If the user insists on parallel browser fills:** one dedicated tab per agent with the tab id pinned on every call, ref-based form interaction over coordinate clicks, a screenshot check after any coordinate click, and an instant stop if a page ever shows a job that isn't that agent's. Brief agents exhaustively on anything judgment-shaped (consent boxes, self-ratings): identically-briefed agents answer *unbriefed* questions differently. Escalation is success — an agent that stops and asks beats one that guesses — and agents never submit; submission stays in the main session.
 
 ## Answer modes — semi-manual vs automatic
 
@@ -209,7 +212,7 @@ Find the record in `applications.md` (match `company`, fall back to `id`/`role`;
 
 ## Settings mode — "settings", "set <field> <value>"
 
-`settings.md` holds the **applier config** — `answers: semi-manual | automatic`, `job-search recency: recent | all`, `job-search results: <n>`, `browser apply: ask | on | off` — and the **application profile**: the facts forms keep asking for. Work authorization + sponsorship (now/future), security clearance, over-18 / date of birth (entered only where a form requires it), willing to relocate, work mode (remote/hybrid/onsite), earliest start date, salary expectation, EEO voluntary self-ID (gender, race/ethnicity, veteran status, disability status — default `prefer not to say`), "how did you hear about us", references. Contact, education, and experience stay in `identity.md`; settings never duplicates them.
+`settings.md` holds the **applier config** — `answers: semi-manual | automatic`, `job-search recency: recent | all`, `job-search results: <n>`, `browser apply: ask | on | off`, `sso sign-in: ask | allowed | off` — and the **application profile**: the facts forms keep asking for. Work authorization + sponsorship (now/future), security clearance, over-18 / date of birth (entered only where a form requires it), willing to relocate, work mode (remote/hybrid/onsite), earliest start date, salary expectation, EEO voluntary self-ID (gender, race/ethnicity, veteran status, disability status — default `prefer not to say`), "how did you hear about us", references. Contact, education, and experience stay in `identity.md`; settings never duplicates them.
 
 - **"settings"** bare → show the file; call out `(unset)` fields, especially any that already blocked or weakened an apply run.
 - **"set <field> <value>"** → update that line and confirm in one line. A new field some form surfaced gets added rather than shoehorned into an existing one.
