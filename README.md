@@ -93,6 +93,8 @@ skills/resume-tailor/
   assets/             # seeds copied into your resume/ folder on first run
 ```
 
+Want to build a system like this yourself (or have an agent rebuild it)? [docs/build-plan.md](docs/build-plan.md) is the complete construction plan — nine milestones in dependency order, with the design rules and the lessons that set the order.
+
 ## License
 
 MIT © Kevin Cui
