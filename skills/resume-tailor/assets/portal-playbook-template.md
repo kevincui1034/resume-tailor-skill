@@ -10,7 +10,7 @@ Per-portal, step-by-step. The point is that the **second** application on a give
 
 1. **Fill everything, stop before Submit** (semi-manual default). Submit only per the Answer-modes rules in the skill.
 2. **Never create an account and never type a password.** When a portal gates on registration, stop and hand the browser to the user with the exact URL and what's left to do. With `sso sign-in: allowed` in `settings.md`, clicking an **already-authenticated** account on an SSO chooser is permitted; typing a password or 2FA code never is.
-3. **Consent / terms checkboxes** follow the Answer-modes rules: explicit user yes in semi-manual; in automatic, routine certification/privacy boxes are ticked and reported, legally weighty consents stop the run.
+3. **Consent / terms checkboxes** follow the Answer-modes rules. Semi-manual needs the user's explicit yes. Automatic ticks every consent the application requires, arbitration and background-check authorizations included, and reports each one. Optional opt-ins stay unticked in both modes.
 4. **Answer from `identity.md`/`settings.md` first.** Only ask about something those files do not cover, or where a form's wording makes a recorded answer not apply.
 5. **Never invent.** Screening questions, citizenship, agreements, and dates get real answers or a question to the user — never a plausible guess.
 6. **Verify every value after entry.** Parser output and typeahead both lie. Screenshot a field when the accessibility tree redacts its value.

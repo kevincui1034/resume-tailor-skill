@@ -31,7 +31,7 @@ Just talk to it. For example:
 - **"Use my resume's design"** — hand it your current resume and it reuses your exact layout for every future resume, instead of the built-in design. You approve the copy before it's used.
 - **"Archive my drafts"** — sweeps old resumes out of the drafts folder into `resume/archive/` so only current work is in front of you. Later, **"clear the archive"** deletes them for good, after it shows you the list and you confirm.
 - **"Find me live openings"** — searches the web for postings that are still open (dead links get dropped), prefers the newest ones if you want, checks each against your background, and shows a shortlist you can tailor or apply to in one go.
-- **"Apply to these"** — with the [Claude in Chrome](https://claude.com/chrome) extension connected, it opens each posting, fills the form from your saved profile, attaches the right PDF, and answers the essay questions in your voice. **Semi-manual** shows you the filled form and waits for your OK before submitting; **automatic** submits on its own and flags anything it wasn't sure about. No browser hookup? You get a paste-ready answer pack instead.
+- **"Apply to these"** — with the [Claude in Chrome](https://claude.com/chrome) extension connected, it opens each posting, fills the form from your saved profile, attaches the right PDF, and answers the essay questions in your voice. **Semi-manual** shows you the filled form and waits for your OK before submitting; **automatic** submits on its own and flags anything it wasn't sure about. Automatic also agrees on your behalf to every consent an application requires, **including arbitration agreements and background-check authorizations**, and lists each one in its report. If you'd rather approve those yourself, stay on semi-manual. No browser hookup? You get a paste-ready answer pack instead.
 - **"Set my salary expectation to…"** — a settings file keeps the facts forms always ask for: work authorization, start date, salary, relocation, the voluntary diversity questions. Those are only ever answered from what you've set — never a guess. Leave a field empty and it asks you (semi-manual) or leaves it blank and tells you (automatic).
 
 ## Commands
@@ -53,6 +53,10 @@ Everything above works in plain words, but if you prefer exact commands, these a
 | `search <role, keywords, location>` | Finds live postings on the open web, verifies each is still accepting applications, and ranks them newest-first or by best fit (your setting). Shortlist comes with match notes and flags (visa, onsite, clearance). |
 | `apply <company \| link \| "these">` | Fills and submits the application in your browser (Claude in Chrome) from your draft + saved profile. Semi-manual reviews before submitting; automatic submits and reports. Without a browser hookup, you get a paste-ready pack. |
 | `settings` / `set <field> <value>` | Shows or sets how the applier behaves (answer mode, search recency, browser use) and your application profile (authorization, salary, start date, EEO defaults). |
+
+## What's new in v1.6.1
+
+**Automatic mode now completes applications that require legal consents.** Before, automatic paused whenever an application required an arbitration agreement or a background/credit-check authorization. Now it ticks every consent the application requires and lists each one by company and wording in the run report, so you can see what you agreed to. Optional opt-ins, such as marketing emails and talent networks, are still left unticked. Semi-manual is unchanged and asks before ticking any consent box.
 
 ## What's new in v1.6.0
 

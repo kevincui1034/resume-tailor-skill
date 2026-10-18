@@ -1,7 +1,7 @@
 {
   "name": "resume-tailor",
   "displayName": "Resume Tailor",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Turn your real work into targeted, one-page LaTeX resumes. Connect local or GitHub repos (or just describe your work) to build verified accomplishment notes, then tailor a resume per job description (multi-JD batches in parallel), write matching cover letters and application-question answers in your voice, check keyword coverage deterministically, track every application in an interactive local dashboard (open it with 'dashboard'), and drop in custom resume templates. Search the web for live postings (newest-first or best-fit), then apply right in your browser via Claude in Chrome - semi-manual (it asks when unsure, you approve the submit) or fully automatic - with form facts like work authorization, salary, and EEO answers drawn only from a settings profile you control. A built-in portal playbook (Workday, Phenom, IBM Careers) distilled from real submissions makes repeat portals cheap, and every new portal you drive extends it. Every bullet traces to real work - nothing is invented, and no form fact is ever guessed.",
   "author": {
     "name": "Kevin Cui",

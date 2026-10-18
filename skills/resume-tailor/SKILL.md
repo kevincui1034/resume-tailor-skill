@@ -166,6 +166,8 @@ Batch applies run **sequentially** — one browser, one form at a time — even 
 - **semi-manual** (default): confident answers are drafted for review like everything else. Unsure — the question needs an opinion, a preference, or an experience the notes don't hold — ask the user for the raw material (one batched ask when several questions need it), then shape their words in voice.
 - **automatic**: answer every narrative question from the best available material, unsure or not, and mark shaky ones `(low-confidence)` in `_answers.md` so the user can spot-check what went out. Automatic never extends to facts — an unknown fact stays blank and flagged in every mode.
 
+**Consent and terms checkboxes** follow the same split. Semi-manual asks the user before ticking any of them. Automatic ticks every consent the application **requires** to continue, for any company. That includes accuracy certifications, privacy notices, terms and conditions, arbitration agreements, and background/credit-check authorizations, and each one is listed in the run report by company and wording. Optional opt-ins are not needed to apply and stay unticked in both modes, including pre-checked ones (marketing emails, talent networks, edits to a profile shared across applications).
+
 ## Connect mode — repos, GitHub, or plain description
 
 The user's project context can come from three places; all three land in a `projects/` accomplishment note (the file tailoring reads) and are registered in `sources.md` (the registry that remembers where notes came from).
