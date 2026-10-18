@@ -1,13 +1,13 @@
 ---
 name: resume-tailor
-description: Tailor one-page LaTeX resumes to job descriptions from the user's real, verified work. Use when the user wants to tailor/build a resume for a JD or role, paste job descriptions or posting URLs (single or batch), write a cover letter or application-question answers, track applications (applied/interviewing/ghosted/rejected), connect a local or GitHub repo (or describe a project/job directly) as resume material, open the application dashboard, switch or drop in a resume template, archive old drafts or clear the archive, or set up a resume workspace. Triggers on "tailor my resume", "resume for this JD", "cover letter for", "mark <company> as <status>", "connect this repo" / "connect these repos", "add my experience at", "open my dashboard", "change resume template", "archive my drafts", "clear the archive".
+description: Tailor one-page LaTeX resumes to job descriptions from the user's real, verified work. Use when the user wants to tailor/build a resume for a JD or role, paste job descriptions or posting URLs (single or batch), search the web for live job postings (newest-first or best-fit), apply to a posting in the browser (autofill + submit via Claude in Chrome, or a paste-ready pack), write a cover letter or application-question answers, set the answer mode (semi-manual/automatic) or application-profile facts (work authorization, salary, start date, EEO defaults), track applications (applied/interviewing/ghosted/rejected), connect a local or GitHub repo (or describe a project/job directly) as resume material, open the application dashboard, switch or drop in a resume template, archive old drafts or clear the archive, or set up a resume workspace. Triggers on "tailor my resume", "resume for this JD", "find me live jobs", "search for openings", "apply to this posting", "cover letter for", "mark <company> as <status>", "set my salary expectation", "answer mode automatic", "connect this repo" / "connect these repos", "add my experience at", "open my dashboard", "change resume template", "archive my drafts", "clear the archive".
 ---
 
 # Resume Tailor
 
 Turns a job description into a targeted, one-page LaTeX resume assembled from the user's **verified accomplishments** — never invented ones. All user data lives in a **workspace** (`./resume/` by default) that this skill creates on first use; the skill itself is a stateless engine over it.
 
-**The honesty rule (load-bearing, applies to everything):** every resume bullet, cover-letter claim, and question answer traces to a real accomplishment note in `resume/projects/`, which traces to a real repo or an explicit user confirmation. Select and rephrase; never invent work, metrics, or technologies. Claims inferred from code rather than confirmed carry `(verify)` and must be confirmed by the user before appearing in anything sent.
+**The honesty rule (load-bearing, applies to everything):** every resume bullet, cover-letter claim, and question answer traces to a real accomplishment note in `resume/projects/`, which traces to a real repo or an explicit user confirmation. Select and rephrase; never invent work, metrics, or technologies. Claims inferred from code rather than confirmed carry `(verify)` and must be confirmed by the user before appearing in anything sent. The same discipline covers **form facts** — work authorization, demographics, logistics, compensation: they come only from `identity.md`/`settings.md` (Settings mode), and a fact neither file holds is asked for or left blank, never guessed.
 
 ## Mode routing
 
@@ -15,12 +15,15 @@ Turns a job description into a targeted, one-page LaTeX resume assembled from th
 | --- | --- |
 | No workspace exists yet (no `resume/` with `identity.md`) | **Init wizard** (below), then continue with what they asked |
 | A JD, posting URL, role name, or several of them | **Tailor** (the default pipeline) |
+| "find me jobs", "search <role / keywords / location>", "any live postings for X?" | **Search** (live postings → ranked shortlist) |
+| "apply to <company / these / this URL>", "finish the application" | **Apply** (browser autofill + submit, or a paste-ready pack) |
 | "connect <repo path(s) / GitHub URL(s)>" — one or several — "add this repo / project / my experience at X" | **Connect** |
 | "connect" alone, "what sources are connected", "sync my repos" | **Connect** (list + sync) |
 | "refresh <draft>" | **Refresh** |
 | "archive", "archive my drafts", "clean out drafts" | **Archive** (moves drafts out; reversible) |
 | "clear", "clear the archive", "delete the archived drafts" | **Clear** (deletes the archive; destructive) |
 | "mark <company> as interviewing/ghosted/rejected/…" | **Status** |
+| "settings", "set <field> <value>", "answer mode automatic" | **Settings** |
 | "change/list/drop in template" | **Template** |
 | "dashboard", "open/show my applications" | **Dashboard** |
 
@@ -30,6 +33,7 @@ Turns a job description into a targeted, one-page LaTeX resume assembled from th
 resume/
   identity.md          # who the resume is about - contact, education, experience entries, self-intro
   voice.md             # how the user sounds in prose - tone, banned phrases (canonical for ALL prose)
+  settings.md          # applier config (answer mode, search recency, browser apply) + application profile (form facts - never guessed)
   format.md            # universal hard rules (one page, ATS, bullet craft, naming, compile recipe)
   template.tex         # the ACTIVE resume template (line 1: % ACTIVE TEMPLATE: <name>)
   templates/           # template library (jake.tex default; drop-ins added here)
@@ -50,7 +54,7 @@ resume/
 
 ## Init wizard (first run, or when any anchor file is missing)
 
-**Default everything; ask one question.** Copy the seeds from this skill's `assets/` directory into the workspace — `templates/jake.tex` (+ activate as `template.tex`, stamped `% ACTIVE TEMPLATE: jake`), `format.md`, `voice-seed.md → voice.md`, `cover-letter-format.md`, `cover-letter-template.tex`, `identity-template.md → identity.md`, `bank-seed.md → bank.md`, `applications-seed.md → applications.md`, `sources-seed.md → sources.md`, `dashboard.html`, `jd-match.mjs → scripts/` — then ask only:
+**Default everything; ask one question.** Copy the seeds from this skill's `assets/` directory into the workspace — `templates/jake.tex` (+ activate as `template.tex`, stamped `% ACTIVE TEMPLATE: jake`), `format.md`, `voice-seed.md → voice.md`, `cover-letter-format.md`, `cover-letter-template.tex`, `identity-template.md → identity.md`, `settings-template.md → settings.md`, `bank-seed.md → bank.md`, `applications-seed.md → applications.md`, `sources-seed.md → sources.md`, `dashboard.html`, `jd-match.mjs → scripts/` — then ask only:
 
 > **"Give me your current resume (any format), links or paths to projects you've worked on, or just tell me about your work — any mix is fine."**
 
@@ -59,7 +63,7 @@ Process whatever comes back (each ingested source is registered in `sources.md` 
 - **Repo paths/URLs** → Connect mode (below), batched if several.
 - **A description of their work** → the interview path; user-confirmed notes, `kind: manual`.
 
-Everything else defaults silently, surfaced as one-line "you can change this later" mentions rather than questions: template = `jake` (drop in their own any time via Template mode), voice = the shipped anti-AI defaults (calibratable later from a writing sample), git = auto-detect (if the workspace is inside a repo, commit after runs; note the default in `identity.md` under `## Config`, reversible on request).
+Everything else defaults silently, surfaced as one-line "you can change this later" mentions rather than questions: template = `jake` (drop in their own any time via Template mode), voice = the shipped anti-AI defaults (calibratable later from a writing sample), git = auto-detect (if the workspace is inside a repo, commit after runs; note the default in `identity.md` under `## Config`, reversible on request), applier = `answers: semi-manual`, `job-search recency: recent`, `browser apply: ask` (all in `settings.md`; the application profile starts `(unset)` and fills lazily, or in one pass via the Settings interview).
 
 End init by showing `identity.md` + the drafted notes in one batched review and collecting corrections (role titles, dates, metrics — unreadable from code).
 
@@ -115,13 +119,49 @@ Record `{pct, missing}` for step 10. Read the missing list with judgment (soft-s
 Follow `cover-letter-format.md` + `cover-letter-template.tex`. Same target analysis as the resume; the matcher's `cover` ids point at bank proof-point skeletons — use them as the factual spine but **re-voice every letter for the company** per `voice.md`; never paste a skeleton verbatim across companies. Filename `<same tokens>_cover.tex`; compile + verify one page + ATS scan.
 
 ### 9. Application answers (only if questions were detected)
-Answer each detected question **in the user's voice per `voice.md`**, honesty rule in full, respecting stated word/char caps, reusing the proof points the resume selected. Plain text, paste-ready. Emit `drafts/<same tokens>_answers.md` — question verbatim, answer, word count — opening with a one-line reminder that these are drafts for the user's review.
+Answer each detected question **in the user's voice per `voice.md`**, honesty rule in full, respecting stated word/char caps, reusing the proof points the resume selected. Plain text, paste-ready. Emit `drafts/<same tokens>_answers.md` — question verbatim, answer, word count — opening with a one-line reminder that these are drafts for the user's review. When a question needs material the notes don't hold, follow **Answer modes** (below): semi-manual asks the user for the raw input; automatic answers anyway and marks it `(low-confidence)`.
 
 ### 10. Track + harvest + log (+ commit if configured)
 - **Harvest to `bank.md`:** new bullets that survived verification, new cover skeletons, new themes for recurring unmatched requirements — each traced to a `projects/` note, tagged with themes and `template`, skipping near-duplicates. This is how the deterministic layer compounds.
 - Append one record per target to `applications.md`'s JSON (status `drafted`, coverage from step 7).
 - Append one entry to `resume/log.md` (`## [YYYY-MM-DD] tailor | <target> -> <draft>`; batches get one entry with per-target bullets).
 - Mention the dashboard reflects the new records. If git was opted in at init: one commit per run (`tailor: <target>`), push, report failures without retry-looping.
+
+## Search mode — "find me live jobs", "search <role / keywords / location>"
+
+Find postings that are **actually open right now** and feed the winners into the Tailor pipeline.
+
+1. **Read `settings.md`:** `job-search recency` (`recent` = newest first, prefer postings ≤ 30 days old; `all` = rank purely by fit) and `job-search results` (shortlist size). Plain words in the request override per run ("newest", "best fit", "top 5").
+2. **Search the open web** (parallel queries): prefer ATS-hosted postings — `site:boards.greenhouse.io`, `site:jobs.lever.co`, `site:jobs.ashbyhq.com`, `site:apply.workable.com` — plus `"<role>" <location> hiring`, with the search tool's recency filter when recency is `recent`. Aggregator links (LinkedIn/Indeed) are leads, not endpoints: they login-wall and go stale, so chase the company's own posting instead.
+3. **Verify live** by fetching every candidate: drop 404s, "no longer accepting applications", and pages that won't load. Extract company, role, location, posted/updated date and comp when shown, and hard constraints worth flagging (citizenship/clearance/onsite/years asked).
+4. **Score fit** with the same keyword logic as tailoring: save the JD text to a temp file and run `jd-match.mjs match` on it (or match by hand per the no-Node fallback) — matched themes and a covered/uncovered glance, not a full draft.
+5. **Rank:** `recent` → dated-and-fresh first (newest → oldest), then undated ones by fit, stale ones last; `all` → fit only.
+6. **Report the shortlist** as one table — company, role, location, posted, fit, flags, link. The search itself persists nothing; target notes are created only for postings that go on to be tailored. Log the run (`## [YYYY-MM-DD] tailor-search | "<query>" -> <N> live, <M> shortlisted`).
+7. **Hand off** per the answer mode: semi-manual → one question, which to tailor and whether to also apply; automatic → batch-tailor the whole shortlist, then Apply mode on each (browser apply permitting).
+
+## Apply mode — "apply to <company>", "apply to these", "finish my applications"
+
+Take a finished draft through the company's real application form. Inputs: the compiled `.pdf` (+ cover PDF if opted), the posting URL (the target note's `source`), `identity.md` + `settings.md` for facts, Answer modes for free text. A target with no draft yet runs the Tailor pipeline first; no URL on file → ask for it.
+
+**Browser or fallback.** Look for browser-automation tools in this order: **Claude in Chrome** (`mcp__claude-in-chrome__*`; it may first surface as a single `enable__mcp__claude-in-chrome` tool — enable it, and read its usage skill first if the session lists one), the Claude desktop app's built-in browser (`mcp__Claude_Browser__*`), then any Playwright/Puppeteer-style MCP. **None →** emit `drafts/<tokens>_apply.md` instead: a paste-ready pack with every form fact laid out field-by-field (contact + links, eligibility, logistics, EEO per settings), the question answers, and the file paths to upload — and mention that connecting Claude in Chrome unlocks the hands-off version.
+
+**Autopilot, per application:**
+1. Open the posting; click through to the form.
+2. Fill facts: contact/links/education from `identity.md`; authorization, logistics, comp, EEO from `settings.md`. **A fact neither file holds is never guessed** — semi-manual asks the user on the spot; automatic leaves it blank when optional, otherwise pauses that application and flags it in the run report.
+3. Upload the resume PDF (and the cover PDF where there's a slot).
+4. Free-text questions → **Answer modes**. Record every answer actually entered in `drafts/<tokens>_answers.md` (marked "as submitted").
+5. **Hard stops, every mode:** account creation and login walls, CAPTCHAs, identity or payment verification, anything outside the application flow. Hand them to the user (semi-manual) or flag + skip to the next application (automatic). The browser is the user's real signed-in session — act only inside the form, never store credentials.
+6. **Submit:** semi-manual → show the filled form (screenshot or field summary) and wait for the go-ahead; automatic → submit and capture the confirmation (text or screenshot).
+7. Update the `applications.md` record: `status: applied`, `statusUpdated`, `notes` gain how it went out (`via browser — auto` / `— reviewed`) + the posting URL. Log (`## [YYYY-MM-DD] tailor-apply | <company> -> applied (auto|reviewed)`) (+ commit if configured).
+
+Batch applies run **sequentially** — one browser, one form at a time — even when the drafts were tailored in parallel.
+
+## Answer modes — semi-manual vs automatic
+
+`settings.md` sets `answers: semi-manual | automatic`; plain words override per run ("ask me about anything you're unsure of" / "answer everything yourself"). The modes govern **narrative** questions only — "tell me about yourself", "how would you apply AI to this workflow?" — always drafted in the user's voice per `voice.md` from real material (`bank.md`, `projects/`, the self-intro). **Fact questions** sit outside the modes: `identity.md`/`settings.md` or nothing (Apply step 2).
+
+- **semi-manual** (default): confident answers are drafted for review like everything else. Unsure — the question needs an opinion, a preference, or an experience the notes don't hold — ask the user for the raw material (one batched ask when several questions need it), then shape their words in voice.
+- **automatic**: answer every narrative question from the best available material, unsure or not, and mark shaky ones `(low-confidence)` in `_answers.md` so the user can spot-check what went out. Automatic never extends to facts — an unknown fact stays blank and flagged in every mode.
 
 ## Connect mode — repos, GitHub, or plain description
 
@@ -166,6 +206,15 @@ Permanently deletes the contents of `archive/`. This is the only destructive mod
 ## Status mode — "mark <company> as <status>"
 
 Find the record in `applications.md` (match `company`, fall back to `id`/`role`; ask if ambiguous). Statuses: `drafted | applied | interviewing | offer | rejected | ghosted`. Set `status` + `statusUpdated` (today), JSON block only, log (+ commit if configured). The dashboard's in-page status buttons are the click alternative — it writes the same file via the File System Access API (Chrome/Edge; read-only + download fallback elsewhere).
+
+## Settings mode — "settings", "set <field> <value>"
+
+`settings.md` holds the **applier config** — `answers: semi-manual | automatic`, `job-search recency: recent | all`, `job-search results: <n>`, `browser apply: ask | on | off` — and the **application profile**: the facts forms keep asking for. Work authorization + sponsorship (now/future), security clearance, over-18 / date of birth (entered only where a form requires it), willing to relocate, work mode (remote/hybrid/onsite), earliest start date, salary expectation, EEO voluntary self-ID (gender, race/ethnicity, veteran status, disability status — default `prefer not to say`), "how did you hear about us", references. Contact, education, and experience stay in `identity.md`; settings never duplicates them.
+
+- **"settings"** bare → show the file; call out `(unset)` fields, especially any that already blocked or weakened an apply run.
+- **"set <field> <value>"** → update that line and confirm in one line. A new field some form surfaced gets added rather than shoehorned into an existing one.
+- **Interview fill** (offered at init and whenever many fields are `(unset)`): batch the profile questions into a few grouped asks and write the file once. Skippable — `(unset)` stays legal; it just means semi-manual asks when a form needs it and automatic flags it.
+- Values the user states are confirmed facts by definition (no `(verify)`). Log as `## [YYYY-MM-DD] tailor-settings | updated: <field names>` — **field names only, never values**; the log travels further than the file.
 
 ## Template mode — "template", "template <name>", or a dropped-in resume
 

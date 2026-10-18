@@ -30,6 +30,9 @@ Just talk to it. For example:
 - **"Open my dashboard"** — a page in your browser with charts of everywhere you've applied, what type of jobs, how well you matched them, and buttons to update each application's status.
 - **"Use my resume's design"** — hand it your current resume and it reuses your exact layout for every future resume, instead of the built-in design. You approve the copy before it's used.
 - **"Archive my drafts"** — sweeps old resumes out of the drafts folder into `resume/archive/` so only current work is in front of you. Later, **"clear the archive"** deletes them for good, after it shows you the list and you confirm.
+- **"Find me live openings"** — searches the web for postings that are still open (dead links get dropped), prefers the newest ones if you want, checks each against your background, and shows a shortlist you can tailor or apply to in one go.
+- **"Apply to these"** — with the [Claude in Chrome](https://claude.com/chrome) extension connected, it opens each posting, fills the form from your saved profile, attaches the right PDF, and answers the essay questions in your voice. **Semi-manual** shows you the filled form and waits for your OK before submitting; **automatic** submits on its own and flags anything it wasn't sure about. No browser hookup? You get a paste-ready answer pack instead.
+- **"Set my salary expectation to…"** — a settings file keeps the facts forms always ask for: work authorization, start date, salary, relocation, the voluntary diversity questions. Those are only ever answered from what you've set — never a guess. Leave a field empty and it asks you (semi-manual) or leaves it blank and tells you (automatic).
 
 ## Commands
 
@@ -47,6 +50,17 @@ Everything above works in plain words, but if you prefer exact commands, these a
 | `dashboard` | Opens the application tracker in your browser. |
 | `archive` | Moves everything in your drafts folder into `resume/archive/` so drafts only holds current work. Nothing is deleted, and the job postings are kept, so any resume can be rebuilt. Name a draft to archive just that one. |
 | `clear` | Permanently deletes what's in `resume/archive/`. Asks you to confirm first, and never touches your current drafts. Your application history stays either way. |
+| `search <role, keywords, location>` | Finds live postings on the open web, verifies each is still accepting applications, and ranks them newest-first or by best fit (your setting). Shortlist comes with match notes and flags (visa, onsite, clearance). |
+| `apply <company \| link \| "these">` | Fills and submits the application in your browser (Claude in Chrome) from your draft + saved profile. Semi-manual reviews before submitting; automatic submits and reports. Without a browser hookup, you get a paste-ready pack. |
+| `settings` / `set <field> <value>` | Shows or sets how the applier behaves (answer mode, search recency, browser use) and your application profile (authorization, salary, start date, EEO defaults). |
+
+## What's new in v1.5.0
+
+**It can now find jobs and apply for you.**
+
+- **Live job search** (`search <role, location>`) — searches the open web, keeps only postings that are verifiably still open, and ranks them **newest-first** or **by best fit** — your choice, saved as a setting. Each hit is checked against your real background before it makes the shortlist.
+- **Browser auto-apply** (`apply`) — with the Claude in Chrome extension connected, it opens the posting, fills the whole form, attaches your tailored PDF, and answers the essay questions in your voice. Two gears, set once in settings or per run: **semi-manual** (it asks you about anything it's unsure of and shows you the filled form before submitting) and **automatic** (it answers everything itself, submits, and flags the answers it was least sure about for you to spot-check). It always stops for logins, CAPTCHAs, and anything involving payment or identity verification.
+- **A settings profile** (`settings`) — one file for the facts every form asks: work authorization and sponsorship, over-18/date of birth, relocation and work mode, earliest start, salary expectation, and the voluntary EEO questions (default: prefer not to say). The hard rule: those answers come from your settings or not at all — the applier never guesses a fact, in either gear.
 
 ## What's new in v1.4.0
 
@@ -59,7 +73,7 @@ Everything above works in plain words, but if you prefer exact commands, these a
 
 - A **one-page PDF** for each job, checked automatically: it really is one page, reads cleanly to the resume-scanning software companies use, and every line is filled out properly.
 - A **match report**: which of the job's requirements your resume covers, and which it honestly doesn't.
-- **Your files, on your computer.** Everything lives in a `resume/` folder as plain text you can open, edit, and back up. Nothing is uploaded anywhere.
+- **Your files, on your computer.** Everything lives in a `resume/` folder as plain text you can open, edit, and back up. Nothing is uploaded anywhere, except the applications you tell it to submit.
 
 ## For the curious (technical notes)
 
