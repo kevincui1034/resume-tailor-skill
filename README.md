@@ -97,7 +97,7 @@ skills/resume-tailor/
   assets/             # seeds copied into your resume/ folder on first run
 ```
 
-Want to build a system like this yourself (or have an agent rebuild it)? [docs/build-plan.md](docs/build-plan.md) is the complete construction plan — nine milestones in dependency order, with the design rules and the lessons that set the order.
+Want to build a system like this yourself (or have an agent rebuild it)? [docs/build-plan.md](docs/build-plan.md) is the complete construction plan, in three parts: the **second brain** — the maturity-staged knowledge vault this system grew inside — then the nine-milestone Resume Tailor engine, then the wiring that adds the resume layer to the vault without the two corrupting each other. Each part stands alone, and the plan closes with the design lessons that set the build order.
 
 ## License
 
